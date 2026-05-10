@@ -8,4 +8,5 @@
 — [LRL-7] Add ability to filter resources by type and difficulty
 — [LRL-8] Add ability to view full resource details
 — [LRL-17] Add ability to create categories (admin)
+— [LRL-18] Add ability to edit categories (admin)
 

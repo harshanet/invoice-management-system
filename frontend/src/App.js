@@ -7,6 +7,7 @@ import Tasks from './pages/Tasks';
 import Resources from './pages/Resources';
 import ResourceDetail from './pages/ResourceDetail';
 import CreateCategory from './pages/admin/CreateCategory';
+import EditCategory from './pages/admin/EditCategory';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/resources" element={<Resources />} />
         <Route path="/resources/:id" element={<ResourceDetail />} />
         <Route path="/admin/categories/new" element={<CreateCategory />} />
+        <Route path="/admin/categories/:id/edit" element={<EditCategory />} />
       </Routes>
     </Router>
   );
