@@ -1,24 +1,72 @@
+# Cafe Order Management System
 
-**Assessment 1.2 (Total Marks **20**)**
+A point-of-sale and kitchen workflow system for a small cafe. Staff take orders at the counter and track them through preparation; managers configure the menu and oversee operations.
 
-Assignment: **Software requirements analysis and design (**Full-Stack CRUD Application Development with DevOps Practices**)**
+Built for IFQ636 Assignment 1.
 
+## Features
 
----
+- **Menu management** (manager only): create, edit, and toggle availability of menu items across categories like Coffee, Food, and Pastry.
+- **Order management** (staff and manager): place orders against menu items, track them through pending -> preparing -> ready -> completed.
+- **Role-based access:** staff and manager roles with distinct permissions.
 
-**Objective**
+## Tech stack
 
-For this assessment, you have already been assigned a project. Your task is to develop a system that implements CRUD (Create, Read, Update, Delete) operations based on the selected project. The system should include both a user panel and an admin panel. Depending on the nature of your chosen project, you may decide how many CRUD operations are required to support the functionality of the system. You have been provided with a starter project that includes user authentication using Node.js, React.js, and MongoDB, your should extend this application based on your assigned project requirements. Ensure that the implemented features are appropriate and meaningful for your selected project. Your project should include the following:
-In this assignment you will complete the following tasks:
+- **Frontend:** React, Tailwind CSS, React Router, Axios
+- **Backend:** Node.js, Express, Mongoose
+- **Database:** MongoDB (run locally via Docker Compose)
+- **Auth:** JWT-based authentication
 
-* **Basic Version Control using GitHub**
-* **Development, CI/CD Integration for Automated Deployment**
-* **Project report**
+## Local setup
 
- 
----
+### Prerequisites
 
-**GitHub link of the starter project: **[https://github.com/nahaQUT/sampleapp_IFQ636.git](https://github.com/nahaQUT/sampleapp_IFQ636.git)
+- Node.js 20+ (LTS)
+- Docker Desktop
 
----
+### Steps
 
+1. Clone the repository.
+
+2. Start MongoDB:
+
+   ```bash
+   docker compose up -d
+   ```
+
+3. Backend (in a new terminal):
+
+   ```bash
+   cd backend
+   npm install
+   cp .env.example .env   # then edit MONGO_URI if needed
+   npm run dev
+   ```
+
+4. Frontend (in a new terminal):
+
+   ```bash
+   cd frontend
+   npm install
+   npm start
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000).
+
+## Project links
+
+- **JIRA board:** _TBD_
+- **Figma design:** _TBD_
+- **Public URL (EC2):** _TBD_
+- **Demo credentials:** _TBD_
+
+## Roadmap
+
+See JIRA for current sprint. Planned epics:
+
+- Menu Management
+- Order Management
+
+## License
+
+This project is submitted as coursework for IFQ636 and is not intended for production use.
