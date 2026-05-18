@@ -25,7 +25,13 @@ const timeAgo = (date) => {
   return `${Math.floor(days / 30)} months ago`;
 };
 
-const ResourceCard = ({ resource, bookmarked = false, onToggle }) => {
+const TrashIcon = () => (
+  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+  </svg>
+);
+
+const ResourceCard = ({ resource, bookmarked = false, onToggle, onRemove }) => {
   const gradient = CATEGORY_GRADIENT[resource.category] || DEFAULT_GRADIENT;
   const diffClass = DIFFICULTY_BADGE[resource.difficulty] || 'bg-gray-100 text-gray-600';
 
@@ -79,6 +85,17 @@ const ResourceCard = ({ resource, bookmarked = false, onToggle }) => {
             <span className="text-xs text-gray-400 capitalize">{resource.category || '—'}</span>
             <span className="text-xs text-gray-400">{timeAgo(resource.createdAt)}</span>
           </div>
+
+          {/* Remove strip — only on Bookmarks page */}
+          {onRemove && (
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRemove(resource._id); }}
+              className="flex items-center justify-center gap-1.5 pt-3 border-t border-gray-100 text-xs text-red-400 hover:text-red-600 font-medium transition-colors w-full"
+            >
+              <TrashIcon />
+              Remove from bookmarks
+            </button>
+          )}
         </div>
       </div>
     </Link>

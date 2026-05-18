@@ -75,6 +75,7 @@ const Bookmarks = () => {
                   resource={b.resourceId}
                   bookmarked={true}
                   onToggle={handleRemove}
+                  onRemove={handleRemove}
                 />
               ) : null
             )}
