@@ -5,6 +5,7 @@ const resourceSchema = new mongoose.Schema({
     description: { type: String },
     type:        { type: String, enum: ['article', 'video', 'course', 'book', 'tool', 'other'], default: 'other' },
     url:         { type: String, required: true },
+    image:       { type: String },
     category:    { type: String },
     tags:        [{ type: String }],
     difficulty:  { type: String, enum: ['beginner', 'intermediate', 'advanced'], default: 'beginner' },

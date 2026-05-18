@@ -1,114 +1,220 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
 import axiosInstance from '../../axiosConfig';
-import { useAuth } from '../../context/AuthContext';
+
+const EMPTY_FORM = { name: '', description: '' };
 
 const AdminCategories = () => {
-    const { user } = useAuth();
-    const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
-    const [loading, setLoading]       = useState(true);
-    const [error, setError]           = useState('');
-    const [confirmId, setConfirmId]   = useState(null);
+    const [search, setSearch]         = useState('');
+    const [form, setForm]             = useState(EMPTY_FORM);
+    const [editId, setEditId]         = useState(null);
+    const [formError, setFormError]   = useState('');
+    const [saving, setSaving]         = useState(false);
+    const [deleteId, setDeleteId]     = useState(null);
+    const [deleting, setDeleting]     = useState(false);
 
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const { data } = await axiosInstance.get('/api/categories');
-                setCategories(data);
-            } catch {
-                setError('Failed to load categories.');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchCategories();
+    const load = useCallback(() => {
+        axiosInstance.get('/api/admin/categories').then(r => setCategories(r.data)).catch(() => {});
     }, []);
 
-    const handleDelete = async (id) => {
+    useEffect(() => { load(); }, [load]);
+
+    const filtered = categories.filter(c =>
+        c.name.toLowerCase().includes(search.toLowerCase())
+    );
+
+    const handle = (key) => (e) => setForm({ ...form, [key]: e.target.value });
+
+    const startEdit = (cat) => {
+        setEditId(cat._id);
+        setForm({ name: cat.name, description: cat.description || '' });
+        setFormError('');
+    };
+
+    const cancelForm = () => {
+        setEditId(null);
+        setForm(EMPTY_FORM);
+        setFormError('');
+    };
+
+    const handleSave = async (e) => {
+        e.preventDefault();
+        if (!form.name.trim()) return setFormError('Category name is required.');
+        setSaving(true);
+        setFormError('');
         try {
-            await axiosInstance.delete(`/api/categories/${id}`, {
-                headers: { Authorization: `Bearer ${user.token}` },
-            });
-            setCategories((prev) => prev.filter((c) => c._id !== id));
-        } catch {
-            setError('Failed to delete category.');
+            if (editId) {
+                const { data } = await axiosInstance.put(`/api/categories/${editId}`, form);
+                setCategories(prev => prev.map(c => c._id === editId ? { ...c, ...data } : c));
+            } else {
+                await axiosInstance.post('/api/categories', form);
+                load();
+            }
+            cancelForm();
+        } catch (err) {
+            setFormError(err.response?.data?.message || 'Failed to save category.');
         } finally {
-            setConfirmId(null);
+            setSaving(false);
         }
     };
 
-    if (loading) return <p className="text-center mt-10 text-gray-500">Loading...</p>;
+    const confirmDelete = async () => {
+        setDeleting(true);
+        try {
+            await axiosInstance.delete(`/api/categories/${deleteId}`);
+            setCategories(prev => prev.filter(c => c._id !== deleteId));
+            if (editId === deleteId) cancelForm();
+        } catch {
+            alert('Failed to delete category.');
+        } finally {
+            setDeleting(false);
+            setDeleteId(null);
+        }
+    };
+
+    const inputClass = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white";
 
     return (
-        <div className="container mx-auto p-6">
+        <div>
+            {/* Header */}
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Categories</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Manage Categories</h1>
                 <button
-                    onClick={() => navigate('/admin/categories/new')}
-                    className="bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded hover:bg-blue-700"
+                    onClick={cancelForm}
+                    className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
                 >
-                    + New Category
+                    + Add Category
                 </button>
             </div>
 
-            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+            <div className="flex gap-5 items-start">
+                {/* Left — category list */}
+                <div className="flex-1 bg-white rounded-lg border border-gray-200">
+                    <div className="px-5 py-4 border-b border-gray-100">
+                        <h2 className="font-semibold text-gray-800 mb-3">
+                            All Categories ({categories.length})
+                        </h2>
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            placeholder="Search categories..."
+                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 bg-gray-50"
+                        />
+                    </div>
 
-            {categories.length === 0 ? (
-                <p className="text-gray-500">No categories yet.</p>
-            ) : (
-                <div className="bg-white rounded-lg shadow overflow-hidden">
                     <table className="w-full text-sm">
-                        <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
-                            <tr>
-                                <th className="px-4 py-3 text-left">Name</th>
-                                <th className="px-4 py-3 text-left">Description</th>
-                                <th className="px-4 py-3 text-right">Actions</th>
+                        <thead>
+                            <tr className="border-b border-gray-100 text-gray-500 text-xs uppercase tracking-wide">
+                                <th className="px-5 py-3 text-left font-medium">Category Name</th>
+                                <th className="px-5 py-3 text-left font-medium">Resources</th>
+                                <th className="px-5 py-3 text-left font-medium">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {categories.map((cat) => (
-                                <tr key={cat._id}>
-                                    <td className="px-4 py-3 font-medium text-gray-800">{cat.name}</td>
-                                    <td className="px-4 py-3 text-gray-500">{cat.description || '—'}</td>
-                                    <td className="px-4 py-3 text-right">
-                                        {confirmId === cat._id ? (
-                                            <span className="flex items-center justify-end gap-2">
-                                                <span className="text-gray-600 text-xs">Delete?</span>
-                                                <button
-                                                    onClick={() => handleDelete(cat._id)}
-                                                    className="text-xs text-red-600 font-semibold hover:underline"
-                                                >
-                                                    Yes
-                                                </button>
-                                                <button
-                                                    onClick={() => setConfirmId(null)}
-                                                    className="text-xs text-gray-500 hover:underline"
-                                                >
-                                                    No
-                                                </button>
-                                            </span>
-                                        ) : (
-                                            <span className="flex items-center justify-end gap-3">
-                                                <button
-                                                    onClick={() => navigate(`/admin/categories/${cat._id}/edit`)}
-                                                    className="text-blue-500 hover:underline text-xs"
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => setConfirmId(cat._id)}
-                                                    className="text-red-500 hover:underline text-xs"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </span>
-                                        )}
+                        <tbody>
+                            {filtered.map(cat => (
+                                <tr key={cat._id} className={`border-b border-gray-50 hover:bg-gray-50 ${editId === cat._id ? 'bg-indigo-50' : ''}`}>
+                                    <td className="px-5 py-3 font-medium text-gray-800">{cat.name}</td>
+                                    <td className="px-5 py-3 text-gray-500">{cat.resourceCount} resources</td>
+                                    <td className="px-5 py-3">
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => startEdit(cat)}
+                                                className="text-xs border border-gray-300 rounded px-2.5 py-1 text-gray-600 hover:bg-gray-100"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => setDeleteId(cat._id)}
+                                                className="text-xs border border-gray-300 rounded px-2.5 py-1 text-gray-600 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
+                            {filtered.length === 0 && (
+                                <tr>
+                                    <td colSpan={3} className="px-5 py-8 text-center text-gray-400">No categories found.</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Right — inline form */}
+                <div className="w-72 bg-white rounded-lg border border-gray-200 p-5 flex-shrink-0">
+                    <h2 className="font-semibold text-gray-800 mb-4">
+                        {editId ? 'Edit Category' : 'Add Category'}
+                    </h2>
+                    <form onSubmit={handleSave} className="flex flex-col gap-4">
+                        {formError && <p className="text-red-500 text-xs">{formError}</p>}
+
+                        <div className="flex flex-col gap-1">
+                            <label className="text-sm font-medium text-gray-700">Category Name *</label>
+                            <input
+                                type="text"
+                                value={form.name}
+                                onChange={handle('name')}
+                                className={inputClass}
+                                placeholder="e.g. Programming"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1">
+                            <label className="text-sm font-medium text-gray-700">Description</label>
+                            <textarea
+                                value={form.description}
+                                onChange={handle('description')}
+                                className={inputClass}
+                                rows={4}
+                                placeholder="Short description of this category..."
+                            />
+                        </div>
+
+                        <div className="flex items-center justify-between pt-1">
+                            <button
+                                type="button"
+                                onClick={cancelForm}
+                                className="border border-gray-300 text-sm font-medium px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={saving}
+                                className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold px-4 py-2 rounded-lg disabled:opacity-50"
+                            >
+                                {saving ? 'Saving...' : 'Save Category'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {/* Delete confirmation modal */}
+            {deleteId && (
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl shadow-xl p-6 w-80">
+                        <h2 className="text-base font-semibold text-gray-900 mb-2">Delete category?</h2>
+                        <p className="text-sm text-gray-500 mb-5">This action cannot be undone.</p>
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                onClick={() => setDeleteId(null)}
+                                className="text-sm border border-gray-300 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                disabled={deleting}
+                                className="text-sm bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+                            >
+                                {deleting ? 'Deleting...' : 'Delete'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
