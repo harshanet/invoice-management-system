@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axiosInstance from '../axiosConfig';
 import ResourceCard from '../components/ResourceCard';
+import { useAuth } from '../context/AuthContext';
 
 const CATEGORY_GRADIENT = {
   'Programming':  'from-blue-900 via-indigo-800 to-violet-900',
@@ -49,6 +50,7 @@ const ClockIcon = () => (
 const Resources = () => {
   const [searchParams] = useSearchParams();
   const search = searchParams.get('search') || '';
+  const { user } = useAuth();
 
   const [allResources, setAllResources] = useState([]);
   const [categories, setCategories]     = useState([]);
@@ -58,6 +60,7 @@ const Resources = () => {
   const [sort, setSort]                 = useState('newest');
   const [filterOpen, setFilterOpen]     = useState(false);
   const [sortOpen, setSortOpen]         = useState(false);
+  const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
   const filterRef = useRef(null);
   const sortRef   = useRef(null);
 
@@ -71,6 +74,40 @@ const Resources = () => {
     }).catch(() => setError('Failed to load resources.'))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    axiosInstance.get('/api/bookmarks')
+      .then(({ data }) => {
+        setBookmarkedIds(new Set(data.map((b) => b.resourceId?._id).filter(Boolean)));
+      })
+      .catch(() => {});
+  }, [user]);
+
+  const handleToggleBookmark = async (resourceId) => {
+    if (!user) return;
+    const isBookmarked = bookmarkedIds.has(resourceId);
+    setBookmarkedIds((prev) => {
+      const next = new Set(prev);
+      if (isBookmarked) next.delete(resourceId);
+      else next.add(resourceId);
+      return next;
+    });
+    try {
+      if (isBookmarked) {
+        await axiosInstance.delete(`/api/bookmarks/${resourceId}`);
+      } else {
+        await axiosInstance.post('/api/bookmarks', { resourceId });
+      }
+    } catch {
+      setBookmarkedIds((prev) => {
+        const next = new Set(prev);
+        if (isBookmarked) next.add(resourceId);
+        else next.delete(resourceId);
+        return next;
+      });
+    }
+  };
 
   useEffect(() => {
     const handler = (e) => {
@@ -241,7 +278,12 @@ const Resources = () => {
       {gridResources.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
           {gridResources.map((resource) => (
-            <ResourceCard key={resource._id} resource={resource} />
+            <ResourceCard
+              key={resource._id}
+              resource={resource}
+              bookmarked={bookmarkedIds.has(resource._id)}
+              onToggle={handleToggleBookmark}
+            />
           ))}
         </div>
       )}

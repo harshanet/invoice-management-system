@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../axiosConfig';
+import { useAuth } from '../context/AuthContext';
 
 const CATEGORY_GRADIENT = {
   'Programming':  'from-blue-900 via-indigo-800 to-violet-900',
@@ -26,8 +27,8 @@ const typeBadgeColor = {
   other:   'bg-gray-50 text-gray-700',
 };
 
-const BookmarkIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+const BookmarkIcon = ({ filled }) => (
+  <svg className="w-5 h-5" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
   </svg>
 );
@@ -47,10 +48,12 @@ const ClockIcon = () => (
 const ResourceDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [resource, setResource] = useState(null);
   const [related, setRelated]   = useState([]);
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState('');
+  const [bookmarked, setBookmarked] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
@@ -71,6 +74,30 @@ const ResourceDetail = () => {
     };
     fetch();
   }, [id]);
+
+  useEffect(() => {
+    if (!user || !id) return;
+    axiosInstance.get('/api/bookmarks')
+      .then(({ data }) => {
+        setBookmarked(data.some((b) => b.resourceId?._id === id));
+      })
+      .catch(() => {});
+  }, [user, id]);
+
+  const handleToggleBookmark = async () => {
+    if (!user) { navigate('/login'); return; }
+    const wasBookmarked = bookmarked;
+    setBookmarked(!wasBookmarked);
+    try {
+      if (wasBookmarked) {
+        await axiosInstance.delete(`/api/bookmarks/${id}`);
+      } else {
+        await axiosInstance.post('/api/bookmarks', { resourceId: id });
+      }
+    } catch {
+      setBookmarked(wasBookmarked);
+    }
+  };
 
   if (loading) return <p className="text-center mt-20 text-gray-400">Loading...</p>;
   if (error)   return <p className="text-center mt-20 text-red-500">{error}</p>;
@@ -145,8 +172,16 @@ const ResourceDetail = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </a>
-            <button className="w-11 h-11 flex items-center justify-center border border-gray-200 rounded-xl text-gray-500 hover:bg-gray-50 transition-colors">
-              <BookmarkIcon />
+            <button
+              onClick={handleToggleBookmark}
+              aria-label={bookmarked ? 'Remove bookmark' : 'Bookmark'}
+              className={`w-11 h-11 flex items-center justify-center border rounded-xl transition-colors ${
+                bookmarked
+                  ? 'border-indigo-300 bg-indigo-50 text-indigo-600'
+                  : 'border-gray-200 text-gray-500 hover:bg-gray-50'
+              }`}
+            >
+              <BookmarkIcon filled={bookmarked} />
             </button>
             <button className="w-11 h-11 flex items-center justify-center border border-gray-200 rounded-xl text-gray-500 hover:bg-gray-50 transition-colors">
               <ShareIcon />

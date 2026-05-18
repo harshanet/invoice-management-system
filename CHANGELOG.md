@@ -10,4 +10,5 @@
 — [LRL-17] Add ability to create categories (admin)
 — [LRL-18] Add ability to edit categories (admin)
 — [LRL-19] Add ability to delete categories with confirmation (admin)
+— [LRL-14] Add ability to save resources to bookmarks with active/inactive toggle state
 
