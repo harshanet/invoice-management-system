@@ -16,6 +16,7 @@ import AdminCategories from './pages/admin/AdminCategories';
 import CreateCategory from './pages/admin/CreateCategory';
 import EditCategory from './pages/admin/EditCategory';
 import AdminUsers from './pages/admin/AdminUsers';
+import Bookmarks from './pages/Bookmarks';
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
           <Route path="/" element={<Navigate to="/resources" replace />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/resources/:id" element={<ResourceDetail />} />
+          <Route path="/bookmarks" element={<Bookmarks />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/tasks" element={<Tasks />} />
         </Route>
