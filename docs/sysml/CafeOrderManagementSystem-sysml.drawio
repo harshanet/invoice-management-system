@@ -649,7 +649,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="NlpOSIXv-6OgtBV7Gdvu" name="03 - Block Definition Diagram">
-    <mxGraphModel dx="2480" dy="713" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1885" dy="705" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1491,10 +1491,64 @@
     </mxGraphModel>
   </diagram>
   <diagram id="U5vgxeAJVM0P4IHgFpEr" name="07 - Internal Block Diagram">
-    <mxGraphModel dx="1914" dy="1031" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1784" dy="638" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="fLLFn16ygYQJSUIFni83-81" edge="1" parent="1" source="fLLFn16ygYQJSUIFni83-54" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;endArrow=none;endFill=0;" target="fLLFn16ygYQJSUIFni83-62">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fLLFn16ygYQJSUIFni83-54" parent="1" style="fontStyle=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=top;spacingLeft=2;fillColor=#030303;" value="httpClient" vertex="1">
+          <mxGeometry height="12" width="10" x="-522" y="243" as="geometry" />
+        </mxCell>
+        <mxCell id="fLLFn16ygYQJSUIFni83-62" parent="1" style="fontStyle=0;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=top;spacingLeft=2;fillColor=#030303;" value="httpServer" vertex="1">
+          <mxGeometry height="12" width="10" x="-340" y="243" as="geometry" />
+        </mxCell>
+        <mxCell id="fLLFn16ygYQJSUIFni83-63" parent="1" style="fontStyle=0;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=top;spacingLeft=2;fillColor=#030303;" value="dbClient" vertex="1">
+          <mxGeometry height="12" width="10" x="-210" y="243" as="geometry" />
+        </mxCell>
+        <mxCell id="fLLFn16ygYQJSUIFni83-78" edge="1" parent="1" source="fLLFn16ygYQJSUIFni83-64" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;startArrow=none;startFill=0;endArrow=none;endFill=0;" target="fLLFn16ygYQJSUIFni83-63">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fLLFn16ygYQJSUIFni83-64" parent="1" style="fontStyle=0;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=top;spacingLeft=2;fillColor=#030303;" value="dbServer" vertex="1">
+          <mxGeometry height="12" width="10" x="-20" y="243" as="geometry" />
+        </mxCell>
+        <mxCell id="fLLFn16ygYQJSUIFni83-79" parent="1" style="text;whiteSpace=wrap;html=1;" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-family: Helvetica; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;&quot;&gt;«flow» MongoQuery&lt;/span&gt;" vertex="1">
+          <mxGeometry height="40" width="130" x="-170" y="221" as="geometry" />
+        </mxCell>
+        <mxCell id="fLLFn16ygYQJSUIFni83-80" parent="1" style="text;whiteSpace=wrap;html=1;" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-family: Helvetica; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;&quot;&gt;«flow» QueryResult&lt;/span&gt;" vertex="1">
+          <mxGeometry height="40" width="130" x="-170" y="261" as="geometry" />
+        </mxCell>
+        <mxCell id="fLLFn16ygYQJSUIFni83-82" parent="1" style="text;whiteSpace=wrap;html=1;" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-family: Helvetica; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;&quot;&gt;«flow» HTTPRequest&lt;/span&gt;" vertex="1">
+          <mxGeometry height="40" width="140" x="-488" y="221" as="geometry" />
+        </mxCell>
+        <mxCell id="fLLFn16ygYQJSUIFni83-83" parent="1" style="text;whiteSpace=wrap;html=1;" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-family: Helvetica; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;&quot;&gt;«flow» HTTPResponse&lt;/span&gt;" vertex="1">
+          <mxGeometry height="40" width="150" x="-488" y="261" as="geometry" />
+        </mxCell>
+        <mxCell id="fLLFn16ygYQJSUIFni83-84" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="backend : ExpressBackend" vertex="1">
+          <mxGeometry height="60" width="120" x="-330" y="219" as="geometry" />
+        </mxCell>
+        <mxCell id="fLLFn16ygYQJSUIFni83-85" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="frontend : ReactFrontend" vertex="1">
+          <mxGeometry height="60" width="120" x="-642" y="219" as="geometry" />
+        </mxCell>
+        <mxCell id="fLLFn16ygYQJSUIFni83-86" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="database : MongoDatabase" vertex="1">
+          <mxGeometry height="60" width="120" x="-10" y="219" as="geometry" />
+        </mxCell>
+        <mxCell id="fLLFn16ygYQJSUIFni83-87" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;width=260;height=30;" value="ibd [Block] CafeOrderManagementSystem" vertex="1">
+          <mxGeometry height="190" width="860" x="-680" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="va9iZPhqR1jDWrBfrYCf-2" parent="1" style="shape=triangle;fillColor=strokeColor;" value="" vertex="1">
+          <mxGeometry height="10" width="10" x="-500" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="va9iZPhqR1jDWrBfrYCf-3" parent="1" style="shape=triangle;fillColor=strokeColor;direction=west;" value="" vertex="1">
+          <mxGeometry height="10" width="10" x="-500" y="269" as="geometry" />
+        </mxCell>
+        <mxCell id="va9iZPhqR1jDWrBfrYCf-4" parent="1" style="shape=triangle;fillColor=strokeColor;" value="" vertex="1">
+          <mxGeometry height="10" width="10" x="-185" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="va9iZPhqR1jDWrBfrYCf-5" parent="1" style="shape=triangle;fillColor=strokeColor;direction=west;" value="" vertex="1">
+          <mxGeometry height="10" width="10" x="-185" y="269" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
