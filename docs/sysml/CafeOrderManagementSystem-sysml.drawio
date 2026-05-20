@@ -1647,10 +1647,67 @@
     </mxGraphModel>
   </diagram>
   <diagram id="Ej9pJT4X4wb3dpxePlDg" name="09 - Parametric Diagram">
-    <mxGraphModel dx="1245" dy="699" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="804" dy="536" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-1" parent="1" style="html=1;shape=mxgraph.sysml.paramDgm;fontStyle=1;whiteSpace=wrap;align=center;container=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;verticalAlign=middle;" value="{total = queue + prep + handoff}" vertex="1">
+          <mxGeometry height="120" width="210" x="280" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-24" parent="wPvAH6oYmlJvzkup8Pb1-1" style="strokeColor=inherit;fillColor=inherit;gradientColor=inherit;shape=rect;html=1;fontSize=10;verticalLabelPosition=top;verticalAlign=bottom;" value="" vertex="1">
+          <mxGeometry height="24" width="26.25" x="183.75" y="18" as="geometry" />
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-33" parent="wPvAH6oYmlJvzkup8Pb1-1" style="strokeColor=inherit;fillColor=inherit;gradientColor=inherit;shape=rect;html=1;fontSize=10;verticalLabelPosition=top;verticalAlign=bottom;" value="" vertex="1">
+          <mxGeometry height="24" width="26.25" x="183.75" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-2" connectable="0" parent="wPvAH6oYmlJvzkup8Pb1-1" style="resizable=0;html=1;align=left;verticalAlign=middle;labelPosition=left;verticalLabelPosition=middle;labelBackgroundColor=none;fontSize=10;spacingLeft=22;fontStyle=1;" value="total" vertex="1">
+          <mxGeometry x="13.125" y="30" as="geometry">
+            <mxPoint x="-8" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-34" connectable="0" parent="wPvAH6oYmlJvzkup8Pb1-1" style="resizable=0;html=1;align=left;verticalAlign=middle;labelPosition=left;verticalLabelPosition=middle;labelBackgroundColor=none;fontSize=10;spacingLeft=22;fontStyle=1;" value="queue" vertex="1">
+          <mxGeometry x="139.9975" y="24" as="geometry">
+            <mxPoint x="-21" y="4" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-37" connectable="0" parent="wPvAH6oYmlJvzkup8Pb1-1" style="resizable=0;html=1;align=left;verticalAlign=middle;labelPosition=left;verticalLabelPosition=middle;labelBackgroundColor=none;fontSize=10;spacingLeft=22;fontStyle=1;" value="handoff" vertex="1">
+          <mxGeometry x="134.005" y="90" as="geometry">
+            <mxPoint x="-20" y="4" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-3" connectable="0" parent="wPvAH6oYmlJvzkup8Pb1-1" style="resizable=0;html=1;align=left;verticalAlign=middle;labelPosition=left;verticalLabelPosition=middle;labelBackgroundColor=none;fontSize=10;spacingLeft=22;fontStyle=1;" value="prep" vertex="1">
+          <mxGeometry x="3" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-58" parent="wPvAH6oYmlJvzkup8Pb1-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="ot : OrderTimingConstraint" vertex="1">
+          <mxGeometry height="30" width="160" x="25" y="-4" as="geometry" />
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="totalTime : Duration" vertex="1">
+          <mxGeometry height="60" width="140" x="100" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="preparationTime : Duration" vertex="1">
+          <mxGeometry height="60" width="140" x="100" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-45" edge="1" parent="1" source="wPvAH6oYmlJvzkup8Pb1-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" target="wPvAH6oYmlJvzkup8Pb1-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="queueWaitTime : Duration" vertex="1">
+          <mxGeometry height="60" width="140" x="530" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-46" edge="1" parent="1" source="wPvAH6oYmlJvzkup8Pb1-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" target="wPvAH6oYmlJvzkup8Pb1-33">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="handoffTime : Duration" vertex="1">
+          <mxGeometry height="60" width="140" x="530" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-43" edge="1" parent="1" source="wPvAH6oYmlJvzkup8Pb1-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=-0.002;entryY=0.243;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;" target="wPvAH6oYmlJvzkup8Pb1-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-44" edge="1" parent="1" source="wPvAH6oYmlJvzkup8Pb1-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=-0.002;entryY=0.737;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;" target="wPvAH6oYmlJvzkup8Pb1-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wPvAH6oYmlJvzkup8Pb1-59" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;width=170;height=28;" value="par [Block] OrderMetrics" vertex="1">
+          <mxGeometry height="418" width="610" x="80" y="42" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
