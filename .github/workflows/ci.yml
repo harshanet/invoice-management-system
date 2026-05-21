@@ -1,28 +1,35 @@
 name: CI
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
-        branches:
-            - main
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  test:
+    name: Backend Tests
+    runs-on: ubuntu-latest
 
-        steps:
-        - name: Checkout code
-            uses: actions/checkout@v2
+    defaults:
+      run:
+        working-directory: backend
 
-        - name: Set up Node.js
-            uses: actions/setup-node@v2
-            with:
-                node-version: '14'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: Install dependencies
-            run: npm install
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
-        - name: Run tests
-            run: npm test
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run unit tests
+        run: npm test

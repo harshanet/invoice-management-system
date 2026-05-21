@@ -13,4 +13,5 @@
 — [LRL-14] Add ability to save resources to bookmarks with active/inactive toggle state
 — [LRL-15] Add ability to view saved bookmarks on a dedicated page
 — [LRL-16] Add ability to remove bookmarks from the bookmarks page
+- [LRL-80] Implement Unit tests via ci/cd
 
