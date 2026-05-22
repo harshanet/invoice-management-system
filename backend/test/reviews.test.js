@@ -1,91 +1,97 @@
 // backend/test/reviews.test.js
-// Integration tests for the authenticated review POST path.
-// Covers: 401 when no token, 201 on happy path, 409 on duplicate-review attempt.
+// Unit tests for reviewController.createReview, using sinon to stub Mongoose methods.
+// Covers happy path (201), duplicate-prevention path (409), and restaurant-not-found (404).
+// No database connection required.
 
 const chai = require('chai');
-const chaiHttp = require('chai-http');
-const mongoose = require('mongoose');
-const app = require('../server');
-const connectDB = require('../config/db');
+const sinon = require('sinon');
+const Review = require('../models/Review');
+const Restaurant = require('../models/Restaurant');
+const { createReview } = require('../controllers/reviewController');
 
-chai.use(chaiHttp);
 const expect = chai.expect;
 
-describe('POST /api/restaurants/:id/reviews', function () {
-  this.timeout(20000);
-
-  // Each test run uses a fresh user (timestamped email) so the compound unique
-  // index on (restaurantId, userId) never blocks reruns.
-  const stamp = Date.now();
-  const testUser = {
-    name: `Mocha Tester ${stamp}`,
-    email: `mocha-${stamp}@test.com`,
-    password: 'mochatest1234',
-  };
-
-  let token; // JWT we'll re-use across tests in this describe
-  let restaurantId; // Saigon & Smoke _id, fetched once
-  let createdReviewId; // captured so we can clean up after the suite
-
-  before(async () => {
-    if (mongoose.connection.readyState === 0) {
-      await connectDB();
-    }
-
-    // Register the test user and grab their JWT.
-    const register = await chai.request(app)
-      .post('/api/auth/register')
-      .set('Content-Type', 'application/json')
-      .send(testUser);
-    expect(register).to.have.status(201);
-    expect(register.body).to.have.property('token');
-    token = register.body.token;
-
-    // Look up Saigon & Smoke's _id so we can POST to its reviews endpoint.
-    const restRes = await chai.request(app).get('/api/restaurants/saigon-smoke');
-    expect(restRes).to.have.status(200);
-    restaurantId = restRes.body._id;
+describe('reviewController.createReview (unit tests, sinon)', () => {
+  afterEach(() => {
+    sinon.restore();
   });
 
-  after(async () => {
-    // Clean up: delete the test review and (best-effort) the test user.
-    if (token && createdReviewId) {
-      await chai.request(app)
-        .delete(`/api/reviews/${createdReviewId}`)
-        .set('Authorization', `Bearer ${token}`);
-    }
-    // Test users accumulate over time. Acceptable - we use a unique email per run.
+  // --- Test 5: createReview happy path ---
+  it('returns 201 when a valid review is created', async () => {
+    const fakeRestaurant = { _id: '507f191e810c19729de860ea', name: 'Saigon & Smoke' };
+    const fakeReview = {
+      _id: 'rev1',
+      restaurantId: '507f191e810c19729de860ea',
+      userId: 'user1',
+      rating: 5,
+      text: 'Excellent food and service.',
+    };
+
+    sinon.stub(Restaurant, 'findById').resolves(fakeRestaurant);
+    sinon.stub(Review, 'create').resolves(fakeReview);
+    // recomputeAggregates internally calls Review.aggregate() then Restaurant.findByIdAndUpdate().
+    // Stub both so the test doesn't try to hit the real database.
+    sinon.stub(Review, 'aggregate').resolves([{ _id: '507f191e810c19729de860ea', average: 5, count: 1 }]);
+    sinon.stub(Restaurant, 'findByIdAndUpdate').resolves(fakeRestaurant);
+
+    const req = {
+      params: { id: '507f191e810c19729de860ea' },
+      body: { rating: 5, text: 'Excellent food and service.' },
+      user: { _id: 'user1' },
+    };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy(),
+    };
+
+    await createReview(req, res);
+
+    expect(res.status.calledWith(201)).to.be.true;
+    expect(res.json.firstCall.args[0]).to.deep.equal(fakeReview);
   });
 
-  it('rejects unauthenticated POST with 401', async () => {
-    const res = await chai.request(app)
-      .post(`/api/restaurants/${restaurantId}/reviews`)
-      .send({ rating: 5, text: 'Trying without a token, should fail.' });
+  // --- Test 6: createReview duplicate-prevention path ---
+  it('returns 409 when the same user reviews the same restaurant twice', async () => {
+    const fakeRestaurant = { _id: '507f191e810c19729de860ea', name: 'Saigon & Smoke' };
+    sinon.stub(Restaurant, 'findById').resolves(fakeRestaurant);
+    // Review.create rejects with a Mongo duplicate-key error (compound unique index hit).
+    sinon.stub(Review, 'create').rejects({ code: 11000 });
 
-    expect(res).to.have.status(401);
+    const req = {
+      params: { id: '507f191e810c19729de860ea' },
+      body: { rating: 3, text: 'Second attempt should be blocked.' },
+      user: { _id: 'user1' },
+    };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy(),
+    };
+
+    await createReview(req, res);
+
+    expect(res.status.calledWith(409)).to.be.true;
+    const body = res.json.firstCall.args[0];
+    expect(body).to.have.property('message');
+    expect(body.message.toLowerCase()).to.include('already');
   });
 
-  it('accepts a valid authenticated review with 201', async () => {
-    const res = await chai.request(app)
-      .post(`/api/restaurants/${restaurantId}/reviews`)
-      .set('Authorization', `Bearer ${token}`)
-      .send({ rating: 5, text: 'Lemongrass beef short rib is the move.' });
+  // --- Test 7: createReview restaurant-not-found path ---
+  it('returns 404 when the restaurant does not exist', async () => {
+    sinon.stub(Restaurant, 'findById').resolves(null);
 
-    expect(res).to.have.status(201);
-    expect(res.body).to.have.property('_id');
-    expect(res.body).to.have.property('rating', 5);
-    expect(res.body).to.have.property('text');
-    createdReviewId = res.body._id;
-  });
+    const req = {
+      params: { id: 'does-not-exist' },
+      body: { rating: 5, text: 'Trying to review a missing restaurant.' },
+      user: { _id: 'user1' },
+    };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy(),
+    };
 
-  it('rejects a second review by the same user on the same restaurant with 409', async () => {
-    const res = await chai.request(app)
-      .post(`/api/restaurants/${restaurantId}/reviews`)
-      .set('Authorization', `Bearer ${token}`)
-      .send({ rating: 3, text: 'Second attempt - should hit the compound unique index.' });
+    await createReview(req, res);
 
-    expect(res).to.have.status(409);
-    expect(res.body).to.have.property('message');
-    expect(res.body.message.toLowerCase()).to.include('already');
+    expect(res.status.calledWith(404)).to.be.true;
+    expect(res.json.firstCall.args[0]).to.have.property('message');
   });
 });

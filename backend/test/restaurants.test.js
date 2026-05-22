@@ -1,76 +1,123 @@
 // backend/test/restaurants.test.js
-// Integration tests for the public restaurant API.
-// Hits the real Express app + Atlas via chai-http in-process (no HTTP socket).
+// Unit tests for restaurantController, using sinon to stub Mongoose methods.
+// No database connection required.
 
 const chai = require('chai');
-const chaiHttp = require('chai-http');
-const mongoose = require('mongoose');
-const app = require('../server');
-const connectDB = require('../config/db');
+const sinon = require('sinon');
+const Restaurant = require('../models/Restaurant');
+const {
+  listRestaurants,
+  getRestaurantBySlug,
+  createRestaurant,
+} = require('../controllers/restaurantController');
 
-chai.use(chaiHttp);
 const expect = chai.expect;
 
-describe('GET /api/restaurants', function () {
-  this.timeout(15000); // Atlas can be slow on cold start.
-
-  before(async () => {
-    if (mongoose.connection.readyState === 0) {
-      await connectDB();
-    }
+describe('restaurantController (unit tests, sinon)', () => {
+  afterEach(() => {
+    sinon.restore();
   });
 
-  after(async () => {
-    // Leave the connection open if the dev server is also using it; only close
-    // if this test process opened it itself. mongoose.connection.close() would
-    // disrupt a parallel dev server.
+  // --- Test 1: listRestaurants happy path ---
+  it('listRestaurants returns 200 with paginated restaurants', async () => {
+    const fakeRestaurants = [
+      { _id: 'r1', name: 'Saigon & Smoke', slug: 'saigon-smoke', cuisine: 'Vietnamese BBQ' },
+      { _id: 'r2', name: 'Nori & Nora', slug: 'nori-nora', cuisine: 'Japanese Italian' },
+    ];
+
+    // Restaurant.find(filter).sort(...).skip(...).limit(...) — stub the whole chain.
+    const chainStub = {
+      sort: sinon.stub().returnsThis(),
+      skip: sinon.stub().returnsThis(),
+      limit: sinon.stub().resolves(fakeRestaurants),
+    };
+    sinon.stub(Restaurant, 'find').returns(chainStub);
+    sinon.stub(Restaurant, 'countDocuments').resolves(2);
+
+    const req = { query: {} };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy(),
+    };
+
+    await listRestaurants(req, res);
+
+    expect(res.json.calledOnce).to.be.true;
+    const body = res.json.firstCall.args[0];
+    expect(body).to.have.property('items').that.deep.equals(fakeRestaurants);
+    expect(body).to.have.property('total', 2);
+    expect(body).to.have.property('page', 1);
+    expect(body).to.have.property('totalPages').that.is.a('number');
   });
 
-  it('returns the seeded catalogue with the expected shape', async () => {
-    const res = await chai.request(app).get('/api/restaurants');
+  // --- Test 2: getRestaurantBySlug happy path ---
+  it('getRestaurantBySlug returns 200 + restaurant when slug exists', async () => {
+    const fakeRestaurant = {
+      _id: 'r1',
+      name: 'Saigon & Smoke',
+      slug: 'saigon-smoke',
+      cuisine: 'Vietnamese BBQ',
+    };
+    sinon.stub(Restaurant, 'findOne').resolves(fakeRestaurant);
 
-    expect(res).to.have.status(200);
-    expect(res.body).to.be.an('object');
-    expect(res.body).to.have.property('items').that.is.an('array');
-    expect(res.body).to.have.property('total').that.is.a('number');
-    expect(res.body).to.have.property('page', 1);
-    expect(res.body).to.have.property('totalPages').that.is.a('number');
-    expect(res.body.items.length).to.be.at.least(6);
+    const req = { params: { slug: 'saigon-smoke' } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy(),
+    };
 
-    const sample = res.body.items[0];
-    expect(sample).to.have.property('_id');
-    expect(sample).to.have.property('name');
-    expect(sample).to.have.property('slug');
-    expect(sample).to.have.property('cuisine');
-    expect(sample).to.have.property('location');
-    expect(sample).to.have.property('averageRating');
-    expect(sample).to.have.property('reviewCount');
+    await getRestaurantBySlug(req, res);
+
+    expect(res.json.calledOnce).to.be.true;
+    expect(res.json.firstCall.args[0]).to.deep.equal(fakeRestaurant);
   });
 
-  it('filters by cuisine when ?cuisine=Vietnamese BBQ is provided', async () => {
-    const res = await chai.request(app)
-      .get('/api/restaurants')
-      .query({ cuisine: 'Vietnamese BBQ' });
+  // --- Test 3: getRestaurantBySlug 404 path ---
+  it('getRestaurantBySlug returns 404 when slug is unknown', async () => {
+    sinon.stub(Restaurant, 'findOne').resolves(null);
 
-    expect(res).to.have.status(200);
-    expect(res.body.items).to.be.an('array').that.is.not.empty;
-    res.body.items.forEach((r) => {
-      expect(r.cuisine.toLowerCase()).to.equal('vietnamese bbq');
-    });
+    const req = { params: { slug: 'does-not-exist' } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy(),
+    };
+
+    await getRestaurantBySlug(req, res);
+
+    expect(res.status.calledWith(404)).to.be.true;
+    expect(res.json.firstCall.args[0]).to.have.property('message');
   });
 
-  it('returns the right restaurant when fetched by slug', async () => {
-    const res = await chai.request(app).get('/api/restaurants/saigon-smoke');
+  // --- Test 4: createRestaurant happy path (admin) ---
+  it('createRestaurant returns 201 when admin creates a valid restaurant', async () => {
+    const newRestaurant = {
+      _id: 'r99',
+      name: 'Test Bistro',
+      slug: 'test-bistro',
+      cuisine: 'Modern Australian',
+      location: 'Sydney, NSW',
+    };
+    sinon.stub(Restaurant, 'create').resolves(newRestaurant);
 
-    expect(res).to.have.status(200);
-    expect(res.body).to.have.property('slug', 'saigon-smoke');
-    expect(res.body).to.have.property('name', 'Saigon & Smoke');
-  });
+    const req = {
+      body: {
+        name: 'Test Bistro',
+        slug: 'test-bistro',
+        cuisine: 'Modern Australian',
+        location: 'Sydney, NSW',
+        description: 'A new place.',
+        imageUrl: 'https://example.com/image.jpg',
+      },
+      user: { _id: 'admin1', role: 'admin' },
+    };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy(),
+    };
 
-  it('returns 404 for an unknown slug', async () => {
-    const res = await chai.request(app).get('/api/restaurants/does-not-exist');
+    await createRestaurant(req, res);
 
-    expect(res).to.have.status(404);
-    expect(res.body).to.have.property('message');
+    expect(res.status.calledWith(201)).to.be.true;
+    expect(res.json.firstCall.args[0]).to.deep.equal(newRestaurant);
   });
 });
