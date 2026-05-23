@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.0.0]
 
 ### Added 
 — [LRL-5] Add ablitiy to browse learning resources
@@ -14,4 +14,5 @@
 — [LRL-15] Add ability to view saved bookmarks on a dedicated page
 — [LRL-16] Add ability to remove bookmarks from the bookmarks page
 - [LRL-80] Implement Unit tests via ci/cd
+- [LRL-81] Implement cloud hosting
 
