@@ -4,6 +4,20 @@
 
 MediTrack is a medical appointment scheduling system developed for Assessment 1.2. The application is a real world CRUD system for managing doctors, appointment slots, patient bookings and administrative scheduling tasks.
 
+## Team
+
+This project was developed for IFN636 Software Lifecycle Management 
+Assessment 2.1 by the following team members:
+
+| Name | Student ID | Primary Contribution |
+|------|-----------|---------------------|
+| Rajit Bhargava | n12483371 | Backend architecture, AWS deployment, design patterns, testing |
+| Hayden Koomans | n11435895 | README documentation, Windows setup, tech stack docs, design patterns, testing |
+| Pratham Hariani | n12262757 | QA testing, UI improvements, application screenshots, design patterns, testing |
+| Takshak Rajvanshi | n12131326 | CONTRIBUTORS.md, architecture overview, merge conflict resolution, design patterns, testing |
+
+GitHub: https://github.com/Rajit270901/sampleapp_IFN636
+
 ## Project Overview
 
 The purpose of MediTrack is to provide a medical appointment booking platform with separate workflows for patients and administrators.
