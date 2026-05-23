@@ -1,0 +1,70 @@
+name: Deploy Frontend
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-deploy.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy-frontend:
+    name: Build & manual-deploy to Amplify
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ap-southeast-2
+      AWS_DEFAULT_REGION: ap-southeast-2
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Look both values up at runtime so there are no extra secrets to manage.
+      - name: Resolve Amplify app id and backend URL
+        id: lookup
+        run: |
+          APP_ID=$(aws amplify list-apps --query "apps[?name=='lrl-frontend'].appId | [0]" --output text)
+          API_URL="https://$(aws cloudfront list-distributions --query "DistributionList.Items[?Comment=='Learning Resource Library backend API'].DomainName | [0]" --output text)"
+          echo "Resolved app_id=$APP_ID  api_url=$API_URL"
+          echo "app_id=$APP_ID" >> "$GITHUB_OUTPUT"
+          echo "api_url=$API_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          REACT_APP_API_URL: ${{ steps.lookup.outputs.api_url }}
+        run: |
+          npm ci
+          npm run build
+
+      - name: Zip build output
+        working-directory: frontend/build
+        run: zip -qr ../build.zip .
+
+      - name: Manual-deploy to Amplify
+        working-directory: frontend
+        run: |
+          APP_ID='${{ steps.lookup.outputs.app_id }}'
+          read JOBID ZIPURL < <(aws amplify create-deployment \
+            --app-id "$APP_ID" --branch-name main \
+            --query "[jobId,zipUploadUrl]" --output text)
+          echo "jobId=$JOBID"
+          curl -s -H "Content-Type: application/zip" -T build.zip "$ZIPURL" \
+            -o /dev/null -w "upload HTTP %{http_code}\n"
+          aws amplify start-deployment --app-id "$APP_ID" --branch-name main --job-id "$JOBID"
+          for i in $(seq 1 40); do
+            S=$(aws amplify get-job --app-id "$APP_ID" --branch-name main --job-id "$JOBID" \
+              --query "job.summary.status" --output text)
+            echo "status=$S"
+            case "$S" in
+              SUCCEED) echo "Frontend deployed"; exit 0;;
+              FAILED|CANCELLED) echo "Deploy $S"; exit 1;;
+            esac
+            sleep 10
+          done
+          echo "timed out waiting for deployment"; exit 1

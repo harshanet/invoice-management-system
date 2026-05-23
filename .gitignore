@@ -13,6 +13,8 @@ node_modules/
 # Production builds
 /build
 /dist
+frontend/build/
+frontend/*.zip
 
 # Testing
 /coverage
@@ -31,3 +33,18 @@ yarn-error.log*
 
 # OS
 Thumbs.db
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+!*.tfvars.example
+.terraform.lock.hcl
+override.tf
+override.tf.json
+# Saved plans embed resolved secrets (PAT, Mongo URI) — never commit
+tfplan
+*.tfplan
+apply.log

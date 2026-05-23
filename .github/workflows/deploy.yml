@@ -1,0 +1,40 @@
+name: Deploy
+
+# On every push to main a sync is performed to update the latest backend into the live app dir
+# reinstalls, re-tests, and restarts the PM2 process.
+#
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to EC2 (self-hosted)
+    runs-on: self-hosted
+
+    env:
+      APP_DIR: /home/ubuntu/app
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Sync backend into the live app dir (preserve .env)
+        run: rsync -a --delete --exclude='.env' --exclude='node_modules' backend/ "$APP_DIR/backend/"
+
+      - name: Write production .env
+        run: printf '%s' "${{ secrets.PROD }}" > "$APP_DIR/backend/.env"
+
+      - name: Install dependencies
+        working-directory: /home/ubuntu/app/backend
+        run: npm install
+
+      - name: Run backend tests (deploy gate)
+        working-directory: /home/ubuntu/app/backend
+        run: npm test
+
+      - name: Restart backend with PM2
+        run: |
+          pm2 restart lrl-backend || pm2 start "$APP_DIR/backend/server.js" --name lrl-backend
+          pm2 save
