@@ -170,8 +170,7 @@ sampleapp_IFQ636/
 ## Technology choices
 
 - **MongoDB Atlas (Sydney)** for managed Mongo with low local latency
-- **Mongoose 6** for schema validation and the post-save aggregation hook that recomputes restaurant `averageRating` after every review mutation
-- **JWT** with role embedded in the payload (no DB lookup needed for admin checks)
+- **Mongoose 6** for schema validation, with restaurant averageRating and reviewCount recomputed by a controller-side $group aggregation called after every review create, update, or delete
 - **bcrypt** via Mongoose pre-save hook on the User schema
 - **React Router v6** with declarative `<ProtectedRoute>` wrapper for auth + role gating
 - **Tailwind CSS 3** with HSL CSS custom properties so the Mesa palette is theme-able from a single source
