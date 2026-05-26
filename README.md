@@ -75,6 +75,12 @@ Frontend runs on `http://localhost:3000`, backend on `http://localhost:5001`.
 | Admin | admin@example.com | password123 |
 | User  | user@example.com | password123 |
 
+These accounts (plus the sample categories and resources) are created by the seed script. From `/backend`, run:
+
+```bash
+npm run seed
+```
+
 ## Project Links
 
 - **Live app:** TBD

@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
+import FeedbackModal from './FeedbackModal';
 
 const BrowseIcon = () => (
   <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -33,6 +34,12 @@ const BellIcon = () => (
   </svg>
 );
 
+const AdminIcon = () => (
+  <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+  </svg>
+);
+
 const SearchIcon = () => (
   <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -45,6 +52,7 @@ const SidebarLayout = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [profileOpen, setProfileOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(locationSearch);
@@ -105,17 +113,17 @@ const SidebarLayout = () => {
         </nav>
 
         <div className="px-3 pb-5 pt-2 border-t border-gray-100 flex flex-col gap-1">
-          <button className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors w-full text-left">
-            <SettingsIcon />
-            Settings
-          </button>
-          <button className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors w-full text-left">
+          {navItem('/settings', 'Settings', SettingsIcon)}
+          <button
+            onClick={() => setFeedbackOpen(true)}
+            className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors w-full text-left"
+          >
             <SupportIcon />
-            Support
+            Feedback
           </button>
-          <button className="mt-2 w-full bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors">
+          <Link to="/about" className="mt-2 w-full bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors text-center">
             About
-          </button>
+          </Link>
         </div>
       </aside>
 
@@ -148,10 +156,16 @@ const SidebarLayout = () => {
                   {initial}
                 </button>
                 {profileOpen && (
-                  <div className="absolute right-0 top-full mt-2 bg-white border border-gray-100 rounded-xl shadow-lg py-1 w-40 z-30">
-                    <Link to="/profile" onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                  <div className="absolute right-0 top-full mt-2 bg-white border border-gray-100 rounded-xl shadow-lg py-1 w-44 z-30">
+                    <Link to="/settings" onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                       Profile
                     </Link>
+                    {user.role === 'admin' && (
+                      <Link to="/admin/dashboard" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50">
+                        <AdminIcon />
+                        Admin Console
+                      </Link>
+                    )}
                     <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                       Logout
                     </button>
@@ -170,6 +184,8 @@ const SidebarLayout = () => {
           <Outlet />
         </main>
       </div>
+
+      {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} />}
     </div>
   );
 };

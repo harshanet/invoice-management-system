@@ -4,6 +4,12 @@ dotenv.config();
 
 const Category = require('./models/Category');
 const Resource = require('./models/Resource');
+const User = require('./models/User');
+
+const users = [
+  { name: 'Admin',     email: 'admin@example.com', password: 'password123', role: 'admin' },
+  { name: 'Test User', email: 'user@example.com',  password: 'password123', role: 'user'  },
+];
 
 const categories = [
   { name: 'Programming',   description: 'Coding tutorials, languages, and software engineering' },
@@ -191,13 +197,18 @@ async function seed() {
 
   await Category.deleteMany({});
   await Resource.deleteMany({});
-  console.log('Cleared existing categories and resources');
+  await User.deleteMany({ email: { $in: users.map((u) => u.email) } });
+  console.log('Cleared existing categories, resources, and seed users');
 
   const createdCategories = await Category.insertMany(categories);
   console.log(`Inserted ${createdCategories.length} categories`);
 
   const createdResources = await Resource.insertMany(resources);
   console.log(`Inserted ${createdResources.length} resources`);
+
+  // User.create (not insertMany) so the password-hashing pre-save hook runs.
+  const createdUsers = await User.create(users);
+  console.log(`Inserted ${createdUsers.length} users (admin@example.com / user@example.com, password: password123)`);
 
   await mongoose.disconnect();
   console.log('Done');

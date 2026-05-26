@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.1]
+
+### Added
+- [LRL-82] Changes required as part of UAT
+
 ## [1.0.0]
 
 ### Added 
