@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
@@ -8,6 +7,14 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     university: { type: String },
     address: { type: String },
+    // Role field distinguishes Customer and Administrator actors.
+    // Defaults to 'customer' on registration. Admin accounts are
+    // provisioned directly in the database per Section 2.0.
+    role: {
+        type: String,
+        enum: ['customer', 'admin'],
+        default: 'customer',
+    },
 });
 
 userSchema.pre('save', async function (next) {
