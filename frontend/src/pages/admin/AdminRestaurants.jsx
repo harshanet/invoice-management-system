@@ -4,7 +4,8 @@
 // Wires to GET /api/restaurants (public list endpoint, but exposed in an admin context
 // for the moderation workflow) and DELETE /api/restaurants/:id (admin-only).
 //
-// Create / Edit forms are scoped for a later patch (feature/frontend-admin-form).
+// Create (POST) via "Add New Restaurant" and Edit (PATCH) via the per-row Edit
+// button both route to AdminRestaurantForm. Delete (DELETE) is handled inline here.
 //
 // Maps to SysML R020 (Create Restaurant), R021 (Update Restaurant), R022 (Delete Restaurant).
 
@@ -72,7 +73,12 @@ export default function AdminRestaurants() {
               Manage the restaurant catalogue. {restaurants.length} total.
             </p>
           </div>
-          {/* Future: <Link to="/admin/restaurants/new"> add restaurant </Link> */}
+          <Link
+            to="/admin/restaurants/new"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md font-semibold hover:opacity-90 transition whitespace-nowrap"
+          >
+            + Add New Restaurant
+          </Link>
         </div>
 
         {error && (
@@ -134,14 +140,22 @@ export default function AdminRestaurants() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(r)}
-                        disabled={deletingId === r._id}
-                        className="px-3 py-1.5 border border-destructive text-destructive rounded-md text-sm font-semibold hover:bg-destructive/10 transition disabled:opacity-50"
-                      >
-                        {deletingId === r._id ? 'Deleting...' : 'Delete'}
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          to={`/admin/restaurants/${r.slug}/edit`}
+                          className="px-3 py-1.5 border border-border text-foreground rounded-md text-sm font-semibold hover:bg-muted transition"
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(r)}
+                          disabled={deletingId === r._id}
+                          className="px-3 py-1.5 border border-destructive text-destructive rounded-md text-sm font-semibold hover:bg-destructive/10 transition disabled:opacity-50"
+                        >
+                          {deletingId === r._id ? 'Deleting...' : 'Delete'}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

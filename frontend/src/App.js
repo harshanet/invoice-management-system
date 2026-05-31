@@ -5,7 +5,6 @@
 // /restaurants/:slug/review, /my-reviews, /profile and /admin/* are gated by
 // ProtectedRoute - unauthenticated users get bounced to /login with the original
 // path preserved in ?next=. Admin routes additionally require role === 'admin'.
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import Browse from './pages/Browse';
@@ -16,8 +15,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import AdminRestaurants from './pages/admin/AdminRestaurants';
+import AdminRestaurantForm from './pages/admin/AdminRestaurantForm';
 import AdminModeration from './pages/admin/AdminModeration';
-
 function App() {
   return (
     <Router>
@@ -25,11 +24,9 @@ function App() {
         {/* Public diner-facing routes */}
         <Route path="/" element={<Browse />} />
         <Route path="/restaurants/:slug" element={<Detail />} />
-
         {/* Auth routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
         {/* Protected routes - require auth */}
         <Route
           path="/restaurants/:slug/review"
@@ -55,13 +52,28 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         {/* Admin routes - require role === 'admin' */}
         <Route
           path="/admin/restaurants"
           element={
             <ProtectedRoute requireAdmin>
               <AdminRestaurants />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/restaurants/new"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminRestaurantForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/restaurants/:slug/edit"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminRestaurantForm />
             </ProtectedRoute>
           }
         />
@@ -73,12 +85,10 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
 }
-
 export default App;
