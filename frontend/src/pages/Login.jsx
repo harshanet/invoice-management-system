@@ -13,7 +13,10 @@ const Login = () => {
     try {
       const response = await axiosInstance.post('/api/auth/login', formData);
       login(response.data);
-      navigate('/tasks');
+      const role = userData.role;
+      if (role === 'admin') navigate('/admin/dashboard');
+      else if (role === 'kitchen') navigate('/kitchen/queue');
+      else navigate('/staff/dashboard');
     } catch (error) {
       alert('Login failed. Please try again.');
     }

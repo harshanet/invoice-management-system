@@ -1,3 +1,4 @@
+// Add this import at the top
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../axiosConfig';
@@ -8,6 +9,7 @@ const OrderDetail = () => {
     const { id } = useParams();
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [cancelling, setCancelling] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -24,8 +26,23 @@ const OrderDetail = () => {
         fetchOrder();
     }, [id]);
 
+    const handleCancel = async () => {
+        if (!window.confirm('Cancel this order?')) return;
+        try {
+            setCancelling(true);
+            await api.put(`/orders/${id}/status`, { status: 'cancelled' });
+            navigate('/staff/orders');
+        } catch (err) {
+            alert(err.response?.data?.message || 'Failed to cancel order');
+        } finally {
+            setCancelling(false);
+        }
+    };
+
     if (loading) return <div style={{ padding: '2rem' }}>Loading...</div>;
     if (!order) return <div style={{ padding: '2rem' }}>Order not found.</div>;
+
+    const canCancel = ['submitted', 'queued'].includes(order.status);
 
     return (
         <div style={{ minHeight: '100vh', background: '#FAF7F2' }}>
@@ -57,10 +74,19 @@ const OrderDetail = () => {
                 </div>
 
                 {order.notes && (
-                    <div style={{ background: 'white', borderRadius: '12px', padding: '1.25rem' }}>
+                    <div style={{ background: 'white', borderRadius: '12px', padding: '1.25rem', marginBottom: '1rem' }}>
                         <h3 style={{ margin: '0 0 0.5rem', color: '#374151' }}>Notes</h3>
                         <p style={{ margin: 0, color: '#6b7280' }}>{order.notes}</p>
                     </div>
+                )}
+
+                {canCancel && (
+                    <button
+                        onClick={handleCancel}
+                        disabled={cancelling}
+                        style={{ width: '100%', background: 'white', color: '#DC2626', border: '1px solid #DC2626', padding: '0.75rem', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>
+                        {cancelling ? 'Cancelling...' : 'Cancel Order'}
+                    </button>
                 )}
             </div>
         </div>
