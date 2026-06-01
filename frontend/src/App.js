@@ -13,6 +13,8 @@ import OrderDetail from './pages/staff/OrderDetail';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import MenuItemsList from './pages/admin/MenuItemsList';
 import MenuItemForm from './pages/admin/MenuItemForm';
+import KitchenQueue from './pages/kitchen/KitchenQueue';
+import KitchenCompleted from './pages/kitchen/KitchenCompleted';
 
 function App() {
     return (
@@ -41,6 +43,14 @@ function App() {
                             <ProtectedRoute roles={['staff', 'admin']}><OrderDetail /></ProtectedRoute>
                         } />
 
+                        {/* Kitchen routes */}
+                        <Route path="/kitchen/queue" element={
+                            <ProtectedRoute roles={['kitchen', 'admin']}><KitchenQueue /></ProtectedRoute>
+                        } />
+                        <Route path="/kitchen/completed" element={
+                            <ProtectedRoute roles={['kitchen', 'admin']}><KitchenCompleted /></ProtectedRoute>
+                        } />
+
                         {/* Admin routes */}
                         <Route path="/admin/dashboard" element={
                             <ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>
@@ -53,13 +63,6 @@ function App() {
                         } />
                         <Route path="/admin/menu/:id/edit" element={
                             <ProtectedRoute roles={['admin']}><MenuItemForm /></ProtectedRoute>
-                        } />
-
-                        {/* Kitchen routes */}
-                        <Route path="/kitchen/*" element={
-                            <ProtectedRoute roles={['kitchen', 'admin']}>
-                                <div>Kitchen — coming soon</div>
-                            </ProtectedRoute>
                         } />
 
                         <Route path="*" element={<Navigate to="/login" replace />} />
