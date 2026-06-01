@@ -11,6 +11,7 @@ import StaffDashboard from './pages/staff/StaffDashboard';
 import ActiveOrders from './pages/staff/ActiveOrders';
 import OrderDetail from './pages/staff/OrderDetail';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminOrders from './pages/admin/AdminOrders';
 import MenuItemsList from './pages/admin/MenuItemsList';
 import MenuItemForm from './pages/admin/MenuItemForm';
 import KitchenQueue from './pages/kitchen/KitchenQueue';
@@ -54,6 +55,9 @@ function App() {
                         {/* Admin routes */}
                         <Route path="/admin/dashboard" element={
                             <ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>
+                        } />
+                        <Route path="/admin/orders" element={
+                            <ProtectedRoute roles={['admin']}><AdminOrders /></ProtectedRoute>
                         } />
                         <Route path="/admin/menu" element={
                             <ProtectedRoute roles={['admin']}><MenuItemsList /></ProtectedRoute>
