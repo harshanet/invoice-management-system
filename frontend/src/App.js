@@ -7,6 +7,9 @@ import Register from './pages/Register';
 import Unauthorized from './pages/Unauthorized';
 import MenuBrowse from './pages/staff/MenuBrowse';
 import Cart from './pages/staff/Cart';
+import StaffDashboard from './pages/staff/StaffDashboard';
+import ActiveOrders from './pages/staff/ActiveOrders';
+import OrderDetail from './pages/staff/OrderDetail';
 
 function App() {
     return (
@@ -19,6 +22,11 @@ function App() {
                         <Route path="/unauthorized" element={<Unauthorized />} />
 
                         {/* Staff routes */}
+                        <Route path="/staff/dashboard" element={
+                            <ProtectedRoute roles={['staff', 'admin']}>
+                                <StaffDashboard />
+                            </ProtectedRoute>
+                        } />
                         <Route path="/staff/menu" element={
                             <ProtectedRoute roles={['staff', 'admin']}>
                                 <MenuBrowse />
@@ -27,6 +35,16 @@ function App() {
                         <Route path="/staff/cart" element={
                             <ProtectedRoute roles={['staff', 'admin']}>
                                 <Cart />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/staff/orders" element={
+                            <ProtectedRoute roles={['staff', 'admin']}>
+                                <ActiveOrders />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/staff/orders/:id" element={
+                            <ProtectedRoute roles={['staff', 'admin']}>
+                                <OrderDetail />
                             </ProtectedRoute>
                         } />
 
