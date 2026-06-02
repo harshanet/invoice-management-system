@@ -1,14 +1,16 @@
 const mongoose = require('mongoose');
 
 const orderItemSchema = new mongoose.Schema({
+    customer: { type: String, default: 'Walk-in customer' },
     menuItem: { type: mongoose.Schema.Types.ObjectId, ref: 'MenuItem', required: true },
     name: { type: String, required: true },
     price: { type: Number, required: true },
     quantity: { type: Number, required: true, min: 1 },
+    image: { type: String, default: '' },
 });
 
 const orderSchema = new mongoose.Schema({
-    orderNumber: { type: Number, required: true, unique: true },
+    orderNumber: { type: Number, unique: true },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     items: [orderItemSchema],
     status: {

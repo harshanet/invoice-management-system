@@ -16,6 +16,7 @@ const createOrder = async (req, res) => {
                 name: menuItem.name,
                 price: menuItem.price,
                 quantity: item.quantity,
+                image: menuItem.image || '',
             };
         }));
 
@@ -26,7 +27,7 @@ const createOrder = async (req, res) => {
             items: orderItems,
             notes,
             totalPrice,
-            status: 'submitted',
+            status: 'queued',
         });
 
         res.status(201).json(order);

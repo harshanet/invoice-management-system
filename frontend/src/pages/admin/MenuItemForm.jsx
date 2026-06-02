@@ -12,7 +12,7 @@ const MenuItemForm = () => {
 
     const [form, setForm] = useState({
         name: '', description: '', price: '', category: 'coffee', available: true,
-    });
+        image: ''});
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
@@ -26,6 +26,7 @@ const MenuItemForm = () => {
                         price: data.price,
                         category: data.category,
                         available: data.available,
+                        image: data.image || '',
                     });
                 } catch (err) {
                     console.error(err);
@@ -83,6 +84,49 @@ const MenuItemForm = () => {
                     <div>
                         <label style={labelStyle}>Description</label>
                         <input name="description" value={form.description} onChange={handleChange} style={fieldStyle} placeholder="Optional description" />
+                    </div>
+                    <div>
+                        <label style={labelStyle}>Image (optional)</label>
+                        <div style={{
+                            border: '2px dashed #d1d5db', borderRadius: '8px',
+                            padding: '1.5rem', textAlign: 'center', cursor: 'pointer',
+                            background: '#fafafa',
+                        }}
+                             onClick={() => document.getElementById('imageUpload').click()}>
+                            {form.image ? (
+                                <img src={form.image} alt="Preview"
+                                     style={{ maxHeight: '160px', maxWidth: '100%', borderRadius: '8px', objectFit: 'cover' }} />
+                            ) : (
+                                <>
+                                    <p style={{ margin: '0 0 0.25rem', fontSize: '1.5rem' }}>📷</p>
+                                    <p style={{ margin: 0, color: '#6b7280', fontSize: '0.9rem' }}>Click to upload image</p>
+                                    <p style={{ margin: '0.25rem 0 0', color: '#9ca3af', fontSize: '0.8rem' }}>PNG, JPG up to 2MB</p>
+                                </>
+                            )}
+                        </div>
+                        <input
+                            id="imageUpload"
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={(e) => {
+                                const file = e.target.files[0];
+                                if (!file) return;
+                                if (file.size > 2 * 1024 * 1024) {
+                                    alert('Image must be under 2MB');
+                                    return;
+                                }
+                                const reader = new FileReader();
+                                reader.onload = () => setForm(prev => ({ ...prev, image: reader.result }));
+                                reader.readAsDataURL(file);
+                            }}
+                        />
+                        {form.image && (
+                            <button onClick={() => setForm(prev => ({ ...prev, image: '' }))}
+                                    style={{ marginTop: '0.5rem', background: 'none', border: 'none', color: '#DC2626', cursor: 'pointer', fontSize: '0.85rem' }}>
+                                Remove image
+                            </button>
+                        )}
                     </div>
                     <div>
                         <label style={labelStyle}>Price ($)</label>

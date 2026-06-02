@@ -10,6 +10,7 @@ const menuItemSchema = new mongoose.Schema({
         enum: ['coffee', 'breakfast', 'lunch', 'pastries']
     },
     available: { type: Boolean, default: true },
+    image: { type: String, default: '' },
 }, { timestamps: true });
 
 module.exports = mongoose.model('MenuItem', menuItemSchema);

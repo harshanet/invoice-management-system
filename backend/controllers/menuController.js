@@ -25,8 +25,8 @@ const getMenuItem = async (req, res) => {
 // POST /api/menu : create menu item (admin only)
 const createMenuItem = async (req, res) => {
     try {
-        const { name, description, price, category, available } = req.body;
-        const item = await MenuItem.create({ name, description, price, category, available });
+        const { name, description, price, category, available, image } = req.body;
+        const item = await MenuItem.create({ name, description, price, category, available, image });
         res.status(201).json(item);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -39,12 +39,13 @@ const updateMenuItem = async (req, res) => {
         const item = await MenuItem.findById(req.params.id);
         if (!item) return res.status(404).json({ message: 'Menu item not found' });
 
-        const { name, description, price, category, available } = req.body;
+        const { name, description, price, category, available, image } = req.body;
         item.name = name ?? item.name;
         item.description = description ?? item.description;
         item.price = price ?? item.price;
         item.category = category ?? item.category;
         item.available = available ?? item.available;
+        item.image = image ?? item.image;
 
         const updated = await item.save();
         res.json(updated);
