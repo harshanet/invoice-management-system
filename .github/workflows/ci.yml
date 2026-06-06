@@ -24,6 +24,12 @@ jobs:
           echo "JWT_SECRET: ${{ secrets.JWT_SECRET }}"
           echo "PORT: ${{ secrets.PORT }}"
 
+      - name: Create Backend .env File
+        run: |
+          echo "MONGO_URI=${{ secrets.MONGO_URI }}" > backend/.env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> backend/.env
+          echo "PORT=${{ secrets.PORT }}" >> backend/.env
+
       - name: Stop running PM2 services
         run: |
           pm2 stop all || true
@@ -31,13 +37,13 @@ jobs:
       - name: Install Backend Dependencies
         run: |
           cd backend
-          yarn install
+          npm install
 
       - name: Install Frontend Dependencies & Build
         run: |
           cd frontend
-          yarn install
-          yarn run build
+          npm install
+          npm run build
 
       - name: Run Backend Mocha/Chai Tests
         run: |
@@ -46,5 +52,5 @@ jobs:
 
       - name: Start and Restart PM2 Services
         run: |
-          pm2 start all || pm2 start backend/server.js --name "parking-backend"
-          pm2 restart all
+          pm2 start backend/server.js --name "parking-backend" || pm2 restart "parking-backend"
+          pm2 save
