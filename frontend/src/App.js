@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import './index.css';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -8,23 +9,48 @@ import MyBookings from './pages/MyBookings';
 import AdminPanel from './pages/AdminPanel';
 import { useAuth } from './context/AuthContext';
 
+function getCurrentTime() {
+  const now = new Date();
+  return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
 function AppContent() {
   const { user } = useAuth();
-  
+
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 sm:p-6">
-      {/* Sleek Mobile Phone Mockup Bezel */}
-      <div className="w-full max-w-[400px] h-[820px] bg-slate-50 shadow-2xl rounded-[48px] border-[12px] border-slate-800 overflow-hidden flex flex-col relative">
-        {/* Speaker / Camera Notch */}
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-2xl z-50 flex items-center justify-center">
-          <div className="w-12 h-1 bg-slate-700 rounded-full mb-1"></div>
+    <div className="app-shell">
+      <div className="phone-frame">
+        {/* Dynamic Island */}
+        <div className="phone-island">
+          <div className="phone-island-camera"></div>
+          <div className="phone-island-light"></div>
         </div>
-        
-        {/* Navbar inside the mobile container */}
-        <Navbar />
-        
-        {/* Main scrollable viewport */}
-        <div className="flex-1 overflow-y-auto pt-2 pb-6">
+
+        {/* Status Bar */}
+        <div className="status-bar">
+          <span className="status-bar-time">{getCurrentTime()}</span>
+          <div className="status-bar-icons">
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="currentColor">
+              <rect x="0" y="4" width="3" height="7" rx="1" opacity="0.4"/>
+              <rect x="4" y="2.5" width="3" height="8.5" rx="1" opacity="0.6"/>
+              <rect x="8" y="1" width="3" height="10" rx="1" opacity="0.8"/>
+              <rect x="12" y="0" width="3" height="11" rx="1"/>
+            </svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor">
+              <path d="M8 2.4C5.6 2.4 3.4 3.4 1.8 5L0 3.2C2.1 1.2 4.9 0 8 0s5.9 1.2 8 3.2L14.2 5C12.6 3.4 10.4 2.4 8 2.4z" opacity="0.4"/>
+              <path d="M8 5.6c-1.5 0-2.9.6-3.9 1.6L2.5 5.6C3.9 4.2 5.8 3.2 8 3.2s4.1 1 5.5 2.4L11.9 7.2C10.9 6.2 9.5 5.6 8 5.6z" opacity="0.7"/>
+              <path d="M8 8.8c-.8 0-1.5.3-2 .8L8 12l2-2.4c-.5-.5-1.2-.8-2-.8z"/>
+            </svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="currentColor">
+              <rect x="0" y="1" width="21" height="10" rx="3" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.5"/>
+              <rect x="1" y="2" width="18" height="8" rx="2" fill="currentColor"/>
+              <path d="M22 4v4c1.1-.5 1.1-3.5 0-4z" opacity="0.5"/>
+            </svg>
+          </div>
+        </div>
+
+        {/* Main scrollable content */}
+        <div className="page-content">
           <Routes>
             <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
             <Route path="/dashboard" element={<Dashboard />} />
@@ -35,6 +61,9 @@ function AppContent() {
             <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>
+
+        {/* Bottom Navigation */}
+        {user && <Navbar />}
       </div>
     </div>
   );

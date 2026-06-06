@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../axiosConfig';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
-import { Car, MapPin, Calendar, Clock, CheckCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -16,6 +15,7 @@ export default function Dashboard() {
     endTime: '12:00'
   });
   const [toast, setToast] = useState(null);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     if (!user) {
@@ -39,10 +39,6 @@ export default function Dashboard() {
     fetchSlots();
   }, [user, navigate]);
 
-  const handleBookClick = (slot) => {
-    setBookingSlot(slot);
-  };
-
   const handleConfirmBooking = async (e) => {
     e.preventDefault();
     if (!bookingSlot) return;
@@ -64,10 +60,9 @@ export default function Dashboard() {
       );
 
       setBookingSlot(null);
-      // Remove slot from available list
       setSlots(slots.filter(s => s._id !== bookingSlot._id));
 
-      setToast(`Successfully reserved Slot ${bookingSlot.slotNumber}!`);
+      setToast(`✓ Slot ${bookingSlot.slotNumber} reserved!`);
       setTimeout(() => {
         setToast(null);
         navigate('/bookings');
@@ -77,153 +72,191 @@ export default function Dashboard() {
     }
   };
 
+  const firstName = user?.name?.split(' ')[0] || 'there';
+
+  const filteredSlots = slots.filter(s =>
+    s.slotNumber?.toLowerCase().includes(search.toLowerCase()) ||
+    s.location?.toLowerCase().includes(search.toLowerCase())
+  );
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
-        <div className="text-lg font-semibold text-slate-600 animate-pulse">Loading available slots...</div>
+      <div className="loading-screen">
+        <div className="spinner"></div>
+        <p className="loading-text">Finding available spots...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
+    <div>
+      {/* Toast */}
       {toast && (
-        <div className="fixed top-24 right-6 bg-emerald-600 text-white px-6 py-4 rounded-lg shadow-xl flex items-center gap-3 z-50 animate-bounce">
-          <CheckCircle size={20} />
-          <span className="font-semibold">{toast}</span>
+        <div className="toast">
+          <span>{toast}</span>
         </div>
       )}
 
-      <div className="max-w-6xl mx-auto">
-        <header className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              <Car className="text-indigo-600" size={32} />
-              Book a Parking Slot
-            </h1>
-            <p className="text-slate-500 mt-2">Choose from our list of available real-time slots.</p>
-          </div>
-          <div className="flex gap-3">
-            <Link to="/bookings" className="bg-white text-indigo-600 border border-indigo-200 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 shadow-sm transition">
-              My Reservations
-            </Link>
-            {user.role === 'admin' && (
-              <Link to="/admin" className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 shadow-sm transition">
-                Admin Settings
-              </Link>
-            )}
-          </div>
-        </header>
+      {/* Hero greeting */}
+      <div className="hero-greeting">
+        <p className="hero-greeting-text">Good day 👋</p>
+        <h1 className="hero-user-name">{firstName}</h1>
+      </div>
 
-        {slots.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center shadow-sm">
-            <Car className="mx-auto text-slate-300 mb-4 animate-bounce" size={48} />
-            <h2 className="text-xl font-bold text-slate-800 mb-2">No Slots Available</h2>
-            <p className="text-slate-500">All parking spaces are currently occupied. Please check back later.</p>
+      {/* Stats */}
+      <div className="stats-row">
+        <div className="stat-card">
+          <span className="stat-value" style={{ color: 'var(--accent-light)' }}>{slots.length}</span>
+          <span className="stat-label">Open Spots</span>
+        </div>
+        <div className="stat-card">
+          <span className="stat-value" style={{ color: 'var(--green)' }}>Live</span>
+          <span className="stat-label">Availability</span>
+        </div>
+      </div>
+
+      {/* Search */}
+      <div className="search-bar">
+        <span className="search-bar-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+        </span>
+        <input
+          placeholder="Search by slot or location..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
+      {/* Slot list */}
+      <p className="section-label">Available Parking</p>
+      <div className="slots-grid">
+        {filteredSlots.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">🅿️</div>
+            <p className="empty-title">No Spots Available</p>
+            <p className="empty-desc">All parking spaces are currently occupied. Check back soon!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {slots.map((slot) => (
-              <div key={slot._id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
-                <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="bg-indigo-50 text-indigo-700 font-bold px-3 py-1 rounded-lg text-sm border border-indigo-100">
-                      {slot.slotNumber}
-                    </span>
-                    <span className="bg-emerald-50 text-emerald-700 font-semibold px-2 py-1 rounded-md text-xs border border-emerald-100">
-                      Available
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-800 mb-2 flex items-center gap-2">
-                    <MapPin size={16} className="text-slate-400" />
-                    {slot.location}
-                  </h3>
-                </div>
-
-                <div className="mt-6">
-                  <div className="bg-slate-50 rounded-xl p-3 flex items-center justify-between mb-4 border border-slate-100">
-                    <span className="text-sm text-slate-500 font-medium">Price per hour</span>
-                    <span className="text-lg font-extrabold text-slate-800">${slot.pricePerHour}/hr</span>
-                  </div>
-
-                  <button
-                    onClick={() => handleBookClick(slot)}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl transition duration-150 shadow-sm"
-                  >
-                    Book Now
-                  </button>
+          filteredSlots.map((slot) => (
+            <div
+              key={slot._id}
+              className="slot-card"
+              onClick={() => setBookingSlot(slot)}
+            >
+              <div className="slot-icon">🚗</div>
+              <div className="slot-info">
+                <div className="slot-number">Slot {slot.slotNumber}</div>
+                <div className="slot-location">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', marginRight: 3, verticalAlign: 'middle' }}>
+                    <path d="M20 10c0 6-8 13-8 13s-8-7-8-13a8 8 0 0 1 16 0Z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  {slot.location}
                 </div>
               </div>
-            ))}
-          </div>
+              <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                <div className="slot-price">${slot.pricePerHour}</div>
+                <div className="slot-price-label">per hour</div>
+                <div className="badge badge-green" style={{ marginTop: 6 }}>Open</div>
+              </div>
+            </div>
+          ))
         )}
       </div>
 
-      {/* Booking Modal */}
+      {/* Booking Bottom Sheet */}
       {bookingSlot && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all animate-scale-up">
-            <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <Calendar className="text-indigo-600" size={24} />
-              Book Slot {bookingSlot.slotNumber}
-            </h2>
-            <p className="text-sm text-slate-500 mb-6">{bookingSlot.location} • ${bookingSlot.pricePerHour}/hr</p>
+        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setBookingSlot(null); }}>
+          <div className="bottom-sheet">
+            <div className="sheet-handle"></div>
+            <h2 className="sheet-title">Reserve Slot {bookingSlot.slotNumber}</h2>
+            <p className="sheet-subtitle">
+              📍 {bookingSlot.location} &nbsp;·&nbsp; ${bookingSlot.pricePerHour}/hr
+            </p>
 
-            <form onSubmit={handleConfirmBooking} className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-2">
-                  <Calendar size={14} className="text-slate-400" />
-                  Select Date
+            <form onSubmit={handleConfirmBooking}>
+              <div className="input-group">
+                <label className="input-label">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', marginRight: 4 }}>
+                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>
+                  </svg>
+                  Date
                 </label>
                 <input
                   type="date"
                   required
                   value={bookingDetails.date}
                   onChange={(e) => setBookingDetails({ ...bookingDetails, date: e.target.value })}
-                  className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition"
+                  className="input"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-2">
-                    <Clock size={14} className="text-slate-400" />
-                    Start Time
-                  </label>
+              <div className="input-row">
+                <div className="input-group" style={{ marginBottom: 0 }}>
+                  <label className="input-label">Start Time</label>
                   <input
                     type="time"
                     required
                     value={bookingDetails.startTime}
                     onChange={(e) => setBookingDetails({ ...bookingDetails, startTime: e.target.value })}
-                    className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition"
+                    className="input"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-2">
-                    <Clock size={14} className="text-slate-400" />
-                    End Time
-                  </label>
+                <div className="input-group" style={{ marginBottom: 0 }}>
+                  <label className="input-label">End Time</label>
                   <input
                     type="time"
                     required
                     value={bookingDetails.endTime}
                     onChange={(e) => setBookingDetails({ ...bookingDetails, endTime: e.target.value })}
-                    className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition"
+                    className="input"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-3 pt-6">
+              {/* Duration preview */}
+              {bookingDetails.startTime && bookingDetails.endTime && (
+                <div style={{
+                  background: 'var(--accent-dim)',
+                  border: '1px solid rgba(124,58,237,0.2)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '10px 14px',
+                  marginTop: 12,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: 13,
+                }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Estimated duration</span>
+                  <span style={{ color: 'var(--accent-light)', fontWeight: 700 }}>
+                    {(() => {
+                      const [sh, sm] = bookingDetails.startTime.split(':').map(Number);
+                      const [eh, em] = bookingDetails.endTime.split(':').map(Number);
+                      const diff = (eh * 60 + em) - (sh * 60 + sm);
+                      if (diff <= 0) return '—';
+                      const h = Math.floor(diff / 60);
+                      const m = diff % 60;
+                      return h > 0 ? `${h}h ${m > 0 ? m + 'm' : ''}` : `${m}m`;
+                    })()}
+                  </span>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
                 <button
                   type="button"
                   onClick={() => setBookingSlot(null)}
-                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-4 rounded-xl transition"
+                  className="btn btn-secondary"
+                  style={{ flex: 1 }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl transition shadow-md"
+                  className="btn btn-primary"
+                  style={{ flex: 2 }}
                 >
                   Confirm Booking
                 </button>
