@@ -57,4 +57,5 @@ jobs:
       - name: Start and Restart PM2 Services
         run: |
           npx --prefix backend pm2 start backend/server.js --name "parking-backend" || npx --prefix backend pm2 restart "parking-backend"
+          npx --prefix backend pm2 start npx --name "parking-frontend" -- serve -s frontend/build -l 3000 || npx --prefix backend pm2 restart "parking-frontend"
           npx --prefix backend pm2 save
