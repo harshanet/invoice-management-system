@@ -32,7 +32,7 @@ jobs:
 
       - name: Stop running PM2 services
         run: |
-          pm2 stop all || true
+          npx --prefix backend pm2 stop all || true
 
       - name: Install Backend Dependencies
         run: |
@@ -56,5 +56,5 @@ jobs:
 
       - name: Start and Restart PM2 Services
         run: |
-          pm2 start backend/server.js --name "parking-backend" || pm2 restart "parking-backend"
-          pm2 save
+          npx --prefix backend pm2 start backend/server.js --name "parking-backend" || npx --prefix backend pm2 restart "parking-backend"
+          npx --prefix backend pm2 save
