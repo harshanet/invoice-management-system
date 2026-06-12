@@ -1,24 +1,87 @@
+# Learning Resource Library
 
-**Assessment 1.2 (Total Marks **20**)**
+A full-stack web application for browsing, managing, and bookmarking learning resources. Built with React, Node.js, Express, and MongoDB.
 
-Assignment: **Software requirements analysis and design (**Full-Stack CRUD Application Development with DevOps Practices**)**
+## Features
 
+- Browse and search learning resources by keyword, category, and difficulty
+- View detailed resource information
+- Bookmark resources to revisit later
+- Admin panel to create, edit, and delete resources and categories
 
----
+## Tech Stack
 
-**Objective**
+- **Frontend:** React.js, Tailwind CSS, Axios
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB (Mongoose)
+- **Auth:** JWT
 
-For this assessment, you have already been assigned a project. Your task is to develop a system that implements CRUD (Create, Read, Update, Delete) operations based on the selected project. The system should include both a user panel and an admin panel. Depending on the nature of your chosen project, you may decide how many CRUD operations are required to support the functionality of the system. You have been provided with a starter project that includes user authentication using Node.js, React.js, and MongoDB, your should extend this application based on your assigned project requirements. Ensure that the implemented features are appropriate and meaningful for your selected project. Your project should include the following:
-In this assignment you will complete the following tasks:
+## Prerequisites
 
-* **Basic Version Control using GitHub**
-* **Development, CI/CD Integration for Automated Deployment**
-* **Project report**
+- Node.js v18+
+- MongoDB
 
- 
----
+## Getting Started
 
-**GitHub link of the starter project: **[https://github.com/nahaQUT/sampleapp_IFQ636.git](https://github.com/nahaQUT/sampleapp_IFQ636.git)
+### 1. Clone the repo
 
----
+```bash
+git clone https://github.com/Booleanruntime/Learning-Resource-Library.git
+cd Learning-Resource-Library
+```
 
+### 2. Configure environment variables
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+Edit `backend/.env` and fill in:
+
+```
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+PORT=5001
+```
+
+### 3. Install dependencies
+
+```bash
+# Backend
+cd backend && npm install
+
+# Frontend
+cd ../frontend && npm install
+```
+
+### 4. Run the app
+
+In separate terminals:
+
+```bash
+# Backend (from /backend)
+npm start
+
+# Frontend (from /frontend)
+npm start
+```
+
+Frontend runs on `http://localhost:3000`, backend on `http://localhost:5001`.
+
+## Test Credentials
+
+| Role  | Email | Password |
+|-------|-------|----------|
+| Admin | admin@example.com | password123 |
+| User  | user@example.com | password123 |
+
+These accounts (plus the sample categories and resources) are created by the seed script. From `/backend`, run:
+
+```bash
+npm run seed
+```
+
+## Project Links
+
+- **Live app:** https://main.d11i2kqy5buvx0.amplifyapp.com
+- **JIRA board:** https://connect-team-k0lanyww.atlassian.net/jira/software/projects/LRL/summary

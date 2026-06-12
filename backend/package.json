@@ -1,10 +1,11 @@
 {
-  "name": "task-manager-backend",
+  "name": "learning-resource-library-backend",
   "version": "1.0.0",
-  "description": "Backend for Task Manager App",
+  "description": "Backend for the Learning Resource Library",
   "main": "server.js",
   "scripts": {
     "test": "mocha",
+    "seed": "node seed.js",
     "start": "node server.js",
     "dev": "nodemon server.js",
     "prod": "node server.js"
