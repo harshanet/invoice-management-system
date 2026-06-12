@@ -4,8 +4,8 @@ import AdminLayout from './components/AdminLayout';
 import AdminRoute from './components/AdminRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Profile from './pages/Profile';
-import Tasks from './pages/Tasks';
+import Settings from './pages/Settings';
+import About from './pages/About';
 import Resources from './pages/Resources';
 import ResourceDetail from './pages/ResourceDetail';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -16,6 +16,7 @@ import AdminCategories from './pages/admin/AdminCategories';
 import CreateCategory from './pages/admin/CreateCategory';
 import EditCategory from './pages/admin/EditCategory';
 import AdminUsers from './pages/admin/AdminUsers';
+import AdminSettings from './pages/admin/AdminSettings';
 import Bookmarks from './pages/Bookmarks';
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
           <Route path="/admin/categories/new" element={<CreateCategory />} />
           <Route path="/admin/categories/:id/edit" element={<EditCategory />} />
           <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
         </Route>
 
@@ -45,8 +47,10 @@ function App() {
           <Route path="/resources" element={<Resources />} />
           <Route path="/resources/:id" element={<ResourceDetail />} />
           <Route path="/bookmarks" element={<Bookmarks />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/about" element={<About />} />
+          {/* Profile consolidated into Settings */}
+          <Route path="/profile" element={<Navigate to="/settings" replace />} />
         </Route>
       </Routes>
     </Router>

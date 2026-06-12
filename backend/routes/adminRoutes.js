@@ -3,6 +3,7 @@ const router = express.Router();
 const Resource = require('../models/Resource');
 const Category = require('../models/Category');
 const User = require('../models/User');
+const Bookmark = require('../models/Bookmark');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 router.get('/categories', protect, adminOnly, async (req, res) => {
@@ -28,12 +29,13 @@ router.get('/categories', protect, adminOnly, async (req, res) => {
 
 router.get('/stats', protect, adminOnly, async (req, res) => {
     try {
-        const [resources, categories, users] = await Promise.all([
+        const [resources, categories, users, bookmarks] = await Promise.all([
             Resource.countDocuments(),
             Category.countDocuments(),
             User.countDocuments(),
+            Bookmark.countDocuments(),
         ]);
-        res.json({ resources, categories, users, bookmarks: 0 });
+        res.json({ resources, categories, users, bookmarks });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

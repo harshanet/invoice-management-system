@@ -57,14 +57,23 @@ const updateUserProfile = async (req, res) => {
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        const { name, email, university, address } = req.body;
+        const { name, email, university, address, currentPassword, newPassword } = req.body;
+
+        // Optional password change — requires the correct current password.
+        if (newPassword) {
+            if (!currentPassword) return res.status(400).json({ message: 'Current password is required to set a new password' });
+            const match = await bcrypt.compare(currentPassword, user.password);
+            if (!match) return res.status(401).json({ message: 'Current password is incorrect' });
+            user.password = newPassword; // hashed by the User pre-save hook
+        }
+
         user.name = name || user.name;
         user.email = email || user.email;
         user.university = university || user.university;
         user.address = address || user.address;
 
         const updatedUser = await user.save();
-        res.json({ id: updatedUser.id, name: updatedUser.name, email: updatedUser.email, university: updatedUser.university, address: updatedUser.address, token: generateToken(updatedUser.id) });
+        res.json({ id: updatedUser.id, name: updatedUser.name, email: updatedUser.email, role: updatedUser.role, university: updatedUser.university, address: updatedUser.address, token: generateToken(updatedUser.id) });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
