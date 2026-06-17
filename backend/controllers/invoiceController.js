@@ -108,7 +108,7 @@ exports.updateInvoice = async (req, res) => {
   }
 };
 
-
+// Delete a Invoice
 exports.deleteInvoice = async (req, res) => {
   try {
     const invoice = await Invoice.findOneAndDelete({
