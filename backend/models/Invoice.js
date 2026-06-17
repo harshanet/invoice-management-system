@@ -1,14 +1,28 @@
 const mongoose = require("mongoose");
 
-const invoiceSchema = new mongoose.Schema (
+const invoiceSchema = new.mongoose.invoiceSchema (
     {
-        invoiceNumber: {
-
+        taxInvoiceDisplayed: {
+            type: String,
+            enum: ["Tax Invoice"],
+            default: "Tax Invoice",
+            required: true,
         },
 
-        customerName: {
+        businessName: {
             type: String,
-            required: [true, "Customer name is required"],
+            required: [true, "Business name is required"],
+        },
+
+        ABNCheck: {
+            type: Number,
+            required: [true, "ABN is required"],
+            match: [/^\d{11}$/, "ABN must be exactly 11 digits"], 
+        },
+
+        issueDate: {
+            type: Date,
+            required: [true, "Issue date is required"],
         },
 
         description: {
@@ -16,21 +30,51 @@ const invoiceSchema = new mongoose.Schema (
             required: [true, "Invoice description is required"],
         },
 
-        amount: {
-
+        GST: {
+            type: Number, 
+            required: [true, "GST is required"],
+            validate: {
+                validator: function(value) {
+                    return value === this.totalAmountPayableIncludeGST / 11;
+                },
+            message: "GST must equal one-eleventh of the total amount payable."
+            }, 
+            
         },
 
+        totalAmountPayableIncludeGST: {
+            type: Number,
+            required: [true, "Total amount payable (including GST) is required"],
+            min: [0, "Total amount payable cannot be negative"],
+        },
+
+        // Additional Attributes for Bookkeeping
         dueDate: {
             type: Date,
-            required: [true, "Due date is required"]
+            required: [true, "Due date is required"],
+        },
 
+        
+        invoiceNumber: {
+            type: Number,
+            required: [true, "Invoice is required"],
+            unique: true,
         },
 
         status: {
-            type: String,
-            default: "Pending",
-
+            type: String, 
+            enum: ["Draft", "Sent", "Paid", "Overdue"],
+            default: "Draft",
         },
-        
+
+        // add pdf logic here? //TODO: do I need this
+
+    },
+
+     // Add createdAt and updatedAt automatically //TODO: do I need this
+    {
+        timestamps: true,
     }
-)
+);
+
+module.exports = mongoose.model("Invoice", invoiceSchema);
