@@ -1,5 +1,4 @@
-
-const express = require('express');
+/*const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
@@ -23,4 +22,44 @@ if (require.main === module) {
   }
 
 
-module.exports = app
+module.exports = app*/
+
+const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const connectDB = require('./config/db');
+
+const invoiceRoutes = require("./routes/invoiceRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
+
+// Load environment variables
+dotenv.config();
+
+const app = express();
+
+/* Middleware */
+app.use(cors());
+
+// Read JSON data
+app.use(express.json());
+
+// Access uploaded images
+app.use("/uploads", express.static("uploads"));
+
+/* Routes */
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use("/api/invoices", invoiceRoutes);
+app.use("/api/payments", paymentRoutes);
+
+/* Start server */
+if (require.main === module) {
+
+    // Connect to MongoDB
+    connectDB();
+
+    const PORT = process.env.PORT || 5001;
+
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}...`));
+}
+
+module.exports = app;

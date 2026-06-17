@@ -15,7 +15,7 @@ const invoiceSchema = new.mongoose.invoiceSchema (
         },
 
         ABNCheck: {
-            type: Number,
+            type: String,
             required: [true, "ABN is required"],
             match: [/^\d{11}$/, "ABN must be exactly 11 digits"], 
         },
@@ -68,7 +68,12 @@ const invoiceSchema = new.mongoose.invoiceSchema (
         },
 
         // add pdf logic here? //TODO: do I need this
-
+        PDF: {
+            type: String,
+            
+            // Save uploaded pdf path
+            default: "",
+        },
     },
 
      // Add createdAt and updatedAt automatically //TODO: do I need this
