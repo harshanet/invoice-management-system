@@ -1,28 +1,88 @@
-name: CI
+# name: CI
+
+# on:
+#     push:
+#         branches:
+#             - main
+#     pull_request:
+#         branches:
+#             - main
+
+# jobs:
+#     build:
+#         runs-on: ubuntu-latest
+
+#         steps:
+#         - name: Checkout code
+#             uses: actions/checkout@v2
+
+#         - name: Set up Node.js
+#             uses: actions/setup-node@v2
+#             with:
+#                 node-version: '14'
+
+#         - name: Install dependencies
+#             run: npm install
+
+#         - name: Run tests
+#             run: npm test
+
+name: CI Pipeline
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
-        branches:
-            - main
+  pull_request:
+    branches: 
+      - develop
+      - 'release/**'
+      - master
+  push:
+    branches:
+      - develop
+      - 'release/**'
+      - master
+
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-        steps:
-        - name: Checkout code
-            uses: actions/checkout@v2
+    steps:
+      - uses: actions/checkout@v4
 
-        - name: Set up Node.js
-            uses: actions/setup-node@v2
-            with:
-                node-version: '14'
+      - name: set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-        - name: Install dependencies
-            run: npm install
+      # Install packages for all folders
+      - name: install deps
+        run: |
+          npm install
+          npm install --prefix backend
+          npm install --prefix frontend
 
-        - name: Run tests
-            run: npm test
+      - name: run tests
+        run: npm test -- --watchAll=false
+
+      # Prevent warnings from stopping the frontend build
+      - name: build frontend
+        run: CI=false npm run build --prefix frontend
+  
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Deploy to EC2
+        run: |
+          cd /home/ubuntu/grocery-delivery-platform
+          git pull origin master
+
+          npm install --prefix backend
+          npm install --prefix frontend
+          CI=false npm run build --prefix frontend
+
+          pm2 restart grocery-backend
+          pm2 restart grocery-frontend
+          pm2 save
