@@ -1,14 +1,16 @@
-# Grocery Delivery Platform
+# Invoice Management System
 
 > IFQ636 Software Lifecycle Management Assignment Project
 
-[![CI Pipeline Status](https://github.com/coolekul29/grocery-delivery-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/coolekul29/grocery-delivery-platform/actions)
+<!-- [![CI Pipeline Status](https://github.com/coolekul29/grocery-delivery-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/coolekul29/grocery-delivery-platform/actions)-->
+
+[![CI Pipeline Status](https://github.com/harshanet/invoice-management-system/actions/workflows/ci.yml/badge.svg)](https://github.com/harshanet/invoice-management-system/actions)
 
 ---
 
 # 1. Project Overview
 
-The Invoice Management System is a full-stack web application built using the MERN stack (MongoDB, Express.js, React.js, and Node.js).
+The Invoice Management System is a full-stack web application built with the MERN stack (MongoDB, Express.js, React.js, and Node.js).
 
 The system allows customers to browse grocery products, search and filter products, add items to a shopping cart, place orders, and manage their accounts. Administrators can manage products, upload product images, and update customer orders through a dedicated administration dashboard.
 
