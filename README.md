@@ -2,7 +2,7 @@
 
 > IFQ636 Software Lifecycle Management Assignment Project
 
-[![CI Pipeline Status](https://github.com/coolekul29/grocery-delivery-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/coolekul29/grocery-delivery-platform/actions)
+<!-- [![CI Pipeline Status](https://github.com/coolekul29/grocery-delivery-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/coolekul29/grocery-delivery-platform/actions)-->
 
 [![CI Pipeline Status](https://github.com/harshanet/invoice-management-system/actions/workflows/ci.yml/badge.svg)](https://github.com/harshanet/invoice-management-system/actions)
 
