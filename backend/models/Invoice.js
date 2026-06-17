@@ -53,7 +53,6 @@ const invoiceSchema = new.mongoose.invoiceSchema (
             type: Date,
             required: [true, "Due date is required"],
         },
-
         
         invoiceNumber: {
             type: Number,
@@ -63,20 +62,19 @@ const invoiceSchema = new.mongoose.invoiceSchema (
 
         status: {
             type: String, 
-            enum: ["Draft", "Sent", "Paid", "Overdue"],
-            default: "Draft",
+            enum: ["Pending", "Paid", "Overdue"],
+            default: "Pending",
         },
 
-        // add pdf logic here? //TODO: do I need this
         PDF: {
             type: String,
-            
+
             // Save uploaded pdf path
             default: "",
         },
     },
 
-     // Add createdAt and updatedAt automatically //TODO: do I need this
+     // Add createdAt and updatedAt automatically
     {
         timestamps: true,
     }

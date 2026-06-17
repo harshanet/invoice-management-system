@@ -6,7 +6,7 @@ exports.createInvoice = async (req, res) => {
     console.log("Body:", req.body);
     console.log("File:", req.file);
 
-    const {taxInvoiceDisplayed, businessName, ABNCheck, issueDate, description, GST, totalAmountPayableInclude, GST, 
+    const {taxInvoiceDisplayed, businessName, ABNCheck, issueDate, description, GST, totalAmountPayableIncludeGST, 
       dueDate, invoiceNumber, status} = req.body;
 
     const invoice = new Invoice({
@@ -38,14 +38,22 @@ exports.getInvoices = async (req, res) => {
     const {date, number} = req.query;
     const query = {};
 
-    // Search issue date
+    // Search issue date (time ignored)
     if (date) {
-      query.issueDate = issueDate;
-    }
+      const start = new Date(date);
+      start.setHours(0, 0, 0, 0);
 
+      const end = new Date(date);
+      end.setHours(23, 59, 59, 999);
+
+      query.issueDate = {
+        $gte: start,
+        $lte: end,
+      };
+    }
     // Filter by invoice number
     if (number) {
-      query.invoiceNumber = invoiceNumber;
+      query.invoiceNumber = Number(number);
     }
 
     const invoices = await Invoice.find(query);
