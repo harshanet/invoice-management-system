@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 
 const paymentSchema = new mongoose.Schema(
     {
-        invoiceId: {
-            type: mongoose.Schema.Types.ObjectId,
+        invoiceNumber: {
+            type: Number,
+            required: [true, "Invoice number is required"],
             ref: "Invoice",
-            required: true,
         },
 
         paymentItems: [
@@ -38,7 +38,7 @@ const paymentSchema = new mongoose.Schema(
 
         amountPaid: {
             type: Number,
-            required: true,
+            required: [true, "Amount paid is required"],
             min: [0, "Amount paid cannot be negative"],
         },
 

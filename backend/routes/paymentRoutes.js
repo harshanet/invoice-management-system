@@ -12,7 +12,7 @@ router.post("/", paymentController.createPayment);
 router.get("/", paymentController.getPayments);
 
 // Update payment status
-router.put("/:id", paymentController.updatePaymentStatus);
+router.put("/:id/sync", paymentController.updatePaymentStatus);
 
 // Delete an payment
 router.delete("/:id", paymentController.deletePaymentOncePaid);

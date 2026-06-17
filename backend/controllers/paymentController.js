@@ -3,7 +3,7 @@ const Invoice = require("../models/Invoice");
 
 exports.createPayment = async (req, res) => {
   try {
-    const { paymentItems, amountPaid } = req.body;
+    const { invoiceNumber, paymentItems, amountPaid } = req.body;
 
     // Create a new payment
     const payment = new Payment({
@@ -48,12 +48,13 @@ exports.updatePaymentStatus = async (req, res) => {
       return res.status(404).json({ message: "Invoice not found" });
     }
 
-    // Keep payment status in sync with invoice
+    // Mark overdue if past due date AND not paid
     if (invoice.status !== "Paid" && new Date() > invoice.dueDate) {
       invoice.status = "Overdue";
       await invoice.save();
     }
 
+    // Sync payment status with invoice
     payment.status = invoice.status;
     await payment.save();
 

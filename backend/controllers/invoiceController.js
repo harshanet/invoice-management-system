@@ -58,7 +58,7 @@ exports.getInvoices = async (req, res) => {
 
     const invoices = await Invoice.find(query);
     res.json(invoices);
-  } catch {
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };

@@ -4,7 +4,7 @@ const upload = require("../middleware/uploadMiddleware");
 
 const router = express.Router();
 
-/* Product routes */
+/* Invoice routes */
 
 // Get all invoices
 router.get("/", invoiceController.getInvoices);
@@ -13,9 +13,9 @@ router.get("/", invoiceController.getInvoices);
 router.post("/", upload.single("PDF"), invoiceController.createInvoice);
 
 // Update invoice details or PDF
-router.put("/:id", upload.single("PDF"), invoiceController.updateInvoice);
+router.put("/:invoiceNumber", upload.single("PDF"), invoiceController.updateInvoice);
 
 // Delete a invoice
-router.delete("/:id", invoiceController.deleteInvoice);
+router.delete("/:invoiceNumber", invoiceController.deleteInvoice);
 
 module.exports = router;
